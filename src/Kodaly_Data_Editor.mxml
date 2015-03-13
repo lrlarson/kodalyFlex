@@ -1,0 +1,1871 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:kodaly="services.kodaly.*"
+					   xmlns:controls="com.universalmind.controls.*"
+					   xmlns:ns2="*"
+					    creationComplete="windowedapplication1_creationCompleteHandler(event)"
+					   width="1000" height="700" creationPolicy="all">
+	<fx:Style source="Kodaly_Data_Editor.css"/>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.GridSelectionEvent;
+			
+			import valueObjects.FiguresForSong;
+			import valueObjects.GameTypesForSong;
+			import valueObjects.MelodicContext;
+			import valueObjects.Motives;
+			import valueObjects.News;
+			import valueObjects.PartWorkForSong;
+			import valueObjects.RhythmicContext;
+			import valueObjects.RythmicContexts;
+			import valueObjects.SongDetails;
+			import valueObjects.SongTypesForSong;
+			import valueObjects.SubjectsForSong;
+			
+			public var mode:String = 'edit';
+			
+			public var intSongID:int;
+			
+			[Bindable]
+			public var fileName:String; 
+			
+			[Bindable]
+			public var mp3Name:String; 
+			
+			
+			protected function dgBasicSongs_creationCompleteHandler(event:FlexEvent):void
+			{
+				getTitlesResult.token = kodaly.getTitles();
+				this.btnDeleteSong.enabled = false;
+				
+			}
+			
+			protected function windowedapplication1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//initialize app data
+				
+				this.getTitlesForCBOResult.token = kodaly.getTitlesForCBO();
+				this.getStatesResult.token = kodaly.getStates();
+				this.getRegionsResult.token = kodaly.getRegions();
+				this.getEthnicitiesResult.token = kodaly.getEthnicity();
+				this.getScalesResult.token = kodaly.getScales();
+				this.getNotesResult.token = this.kodaly.getNotes();
+				this.getRangeResult.token = this.kodaly.getRange();
+				this.getMetersResult.token = this.kodaly.getMeters();
+				this.getFormsResult.token = this.kodaly.getForms();
+				this.getFormTypeResult.token = this.kodaly.getFormType();
+				this.getStartingPitchResult.token = this.kodaly.getStartingPitch();
+				this.getMelodicElementsResult.token = this.kodaly.getMelodicElements();
+				this.getMelodicContextsResult.token = this.kodaly.getMelodicContexts();
+				this.getRythmicContextsResult.token = this.kodaly.getRythmicContexts();
+				this.getSubjectHeadingsResult.token = this.kodaly.getSubjectHeading();
+				
+				
+				
+			}
+			
+			protected function dgBasicSongs_doubleClickHandler(event:MouseEvent):void
+			{
+				this.intSongID = (int(this.dgBasicSongs.selectedItem.ID));
+				this.getSongDetailsResult.token = kodaly.getSongDetails(this.intSongID);
+				
+			}
+			
+			protected function getSongDetailsResult_resultHandler(event:ResultEvent):void
+			{
+				
+				
+				this.currentState = 'editContainer';
+				this.audioPLayer.enabled = false;
+				this.btnSaveNewSong.visible = false;
+				this.btnSaveSongEdits.visible = true;
+				this.tiTitle.text = event.result[0].Title;
+				this.tiAltTitle1.text = event.result[0].Alt_Title_1;
+				this.tiAltTitle2.text = event.result[0].Alt_Title_2;
+				this.cboStates.selectedValue = event.result[0].stateID;
+				this.cboRegions.selectedValue = event.result[0].regionID;
+				this.cboEthnic.selectedValue = event.result[0].ethnicityID;
+				this.cboScales.selectedValue = event.result[0].scaleID;
+				this.cboNotes.selectedValue = event.result[0].tonalCenterID;
+				this.cboRange.selectedValue = event.result[0].rangeID;
+				this.cboMeters.selectedValue = event.result[0].meterID;
+				this.cboForms.selectedValue= event.result[0].formID;
+				this.cboFormType.selectedValue = event.result[0].formTypeID;
+				this.cboStartingPitch.selectedValue = event.result[0].Starting_PitchID;
+				this.txtInformant.text = event.result[0].Informant;
+				this.txtSource.text = event.result[0].Publication;
+				this.tiFormAnalysisStr.text = event.result[0].formAnalysisStr;
+				this.tiSongFirstLine.text = event.result[0].First_Line_Text;
+				this.richTextEditor.text = event.result[0].Comments;
+				this.tiToneSet.text = event.result[0].toneSetID;
+				this.txtSong_Background.text = event.result[0].Song_Background;
+				
+				
+				//checkboxes
+				this.chkAnlayzed.selected = event.result[0].Analyzed;
+				this.chkNotated.selected = event.result[0].inFinale;
+				this.chkProofed.selected = event.result[0].Proofed_Flag;
+				this.chkIP.selected = event.result[0].IP_Status;
+				this.chkLoC.selected = event.result[0].LoC;
+				this.chkChild.selected = event.result[0].Child;
+				this.chkHasRecording.selected = event.result[0].Recording_Flag;
+				this.chkGame.selected = event.result[0].Game;
+				
+				//scalar values for later pages
+				
+				this.fileName = event.result[0].Notation_File_Name;
+				this.mp3Name = "http://kodaly.hnu.edu/sound_files/" + fileName + ".mp3";
+				
+				//get tabular values for song
+				this.getMelodicContextResult.token = this.kodaly.getMelodicContextsForSong (this.intSongID);
+				this.getRythmicContextResult.token = this.kodaly.getRythmicContextsForSong (this.intSongID);
+				this.getPartWorkForSongResult.token = kodaly.getPartWorkForSong(this.intSongID);
+				this.getSubjectsForSongResult.token = kodaly.getSubjectsForSong(this.intSongID);
+				this.getMotivesForSongResult.token = kodaly.getMotivesForSong(this.intSongID);
+				this.getGamesForSongResult.token = kodaly.getGamesForSong(this.intSongID);
+				this.getSongTypesForSongResult.token = kodaly.getSongTypesForSong(this.intSongID);
+				this.getFiguresForSongResult.token = kodaly.getFiguresForSong(this.intSongID);
+				
+				
+				//get note values
+				this.ry_anacrusis.selected = event.result[0].Anac;
+				this.ry_eigthRest.selected = event.result[0].eighth_rest;
+				this.ry_halfrest.selected = event.result[0].half_rest;
+				this.ry_ta.selected = event.result[0].ta;
+				this.ry_ti_ti.selected = event.result[0].ti_ti;
+				this.ry_ta_a.selected = event.result[0].ta_a;
+				this.ry_ta_a_a.selected = event.result[0].ta_a_a;
+				this.ry_ta_a_a_a.selected = event.result[0].ta_a_a_a;
+				this.ry_whole_rest.selected = event.result[0].whole_rest;
+				this.ry_tiri_tiri.selected = event.result[0].tiri_tiri;
+				this.ry_ti_tiri.selected = event.result[0].ti_tiri;
+				this.ry_tiri_ti.selected = event.result[0].tiri_ti;
+				this.ry_sync_co_pa.selected = event.result[0].ti_ta_ti;
+				this.ry_tai_ti.selected = event.result[0].tai_ti;
+				this.ry_ti_tai.selected = event.result[0].ti_tai;
+				this.ry_ti.selected = event.result[0].ti;
+				this.ry_tiri.selected = event.result[0].tiri;
+				this.ry_tim_ri.selected = event.result[0].tim_ri;
+				this.ry_ri_tim.selected = event.result[0].ri_tim;
+				this.ry_tri_o_la.selected = event.result[0].tri_o_la;
+				this.ry_ti_ti_ti.selected = event.result[0].ti_ti_ti;
+				this.ry_ta_ti.selected = event.result[0].ta_ti;
+				this.ry_ti_ta.selected = event.result[0].ti_ta;
+				this.ry_tai.selected = event.result[0].tai;
+				this.ry_tim_ri_ti.selected = event.result[0].tim_ri_ti;
+				this.ry_ti_tim_ri.selected = event.result[0].ti_tim_ri;
+				this.ry_tie.selected = event.result[0].tie;
+				this.ry_other.selected = event.result[0].other_other;
+				//this.ry_rest.selected = event.result[0].rest;
+				this.ry_ri_tim_ti.selected = event.result[0].ri_tim_ri;
+				this.ry_ri.selected = event.result[0].Ri;
+				this.ry_rest.selected = event.result[0].rest;
+				this.ry_tim.selected = event.result[0].Tim;
+				this.tiNotationFileName.text = event.result[0].Notation_File_Name;
+				
+				
+				
+				//this.ry_ti_tim_ri.selected = event.result[0].ri_ti_ti;
+				
+				this.ry_ri_ti_ri.selected = event.result[0].ri_tim_ri;
+			
+				//Uses tab values
+				this.txtGradeLevel.text = event.result[0].Grade_String;
+				this.tgl1.selected = event.result[0].one;
+				this.tgl2.selected = event.result[0].two;
+				this.tgl3.selected = event.result[0].three;
+				this.tgl4.selected = event.result[0].four;
+				this.tgl5.selected = event.result[0].five;
+				this.tgl6.selected = event.result[0].six;
+				this.tgl7.selected = event.result[0].seven;
+				this.tgl8.selected = event.result[0].eight;
+				this.tglK.selected = event.result[0].k;
+				this.tglPreK.selected = event.result[0].ch;
+				this.tglHighSchool.selected = event.result[0].ten;
+				this.tglOlder.selected = event.result[0].zero;
+				
+				
+			
+				
+				
+				
+			}
+			
+			protected function btnCreateNewSong_clickHandler(event:MouseEvent):void
+			{
+				this.initializeForm();
+				this.btnDeleteSong.enabled = false;
+				this.setTabsDisabled();
+				Alert.show('You must save the first page of a song before continuing...');
+				this.btnSaveNewSong.visible = true;
+				this.btnSaveSongEdits.visible = false;
+				this.mode = 'new';
+				
+				
+			}
+			
+			protected function setTabsDisabled():void{
+				this.btnPed.enabled = false;
+				this.tabRhythms.enabled = false;
+				this.uses.enabled = false;
+				this.tabFileNames.enabled= false;
+			}
+			
+			protected function setTabsEnabled():void{
+				this.btnPed.enabled = true;
+				this.tabRhythms.enabled = true;
+				this.uses.enabled = true;
+				this.tabFileNames.enabled= true;
+			}
+			
+			
+			protected function initializeForm():void{
+				this.currentState = 'editContainer';
+				this.audioPLayer.enabled = false;
+				this.tiTitle.text = '';
+				this.tiAltTitle1.text = '';
+				this.tiAltTitle2.text = '';
+				this.cboStates.selectedIndex = 0;
+				this.cboRegions.selectedIndex = 0;
+				this.cboEthnic.selectedIndex = 0; //_none
+				this.cboScales.selectedIndex = 0;
+				this.cboNotes.selectedIndex = 7;
+				this.cboRange.selectedIndex = 0;
+				this.cboMeters.selectedIndex = 0;
+				this.cboForms.selectedIndex = 0;
+				this.cboFormType.selectedIndex = 0;
+				this.cboStartingPitch.selectedIndex = 0;
+				this.txtInformant.text = '';
+				this.txtSource.text = '';
+				this.tiFormAnalysisStr.text = '';
+				this.tiSongFirstLine.text = '';
+				this.richTextEditor.text = '';
+				this.tiToneSet.text = '';
+				this.txtSong_Background.text = '';
+				this.tiNotationFileName.text = '';
+				
+				//scalar values for later pages
+				
+				this.fileName = '';
+				this.mp3Name = '';
+				
+				//checkboxes
+				this.chkAnlayzed.selected = false;
+				this.chkNotated.selected = false;
+				this.chkProofed.selected = false;
+				this.chkIP.selected = false;
+				this.chkLoC.selected = false;
+				this.chkChild.selected = false;
+				this.chkGame.selected = false;
+				
+				
+				this.ry_anacrusis.selected = false;
+				this.ry_eigthRest.selected = false;
+				this.ry_halfrest.selected = false;
+				this.ry_ta.selected = false;
+				this.ry_ti_ti.selected = false;
+				this.ry_ta_a.selected = false
+				this.ry_ta_a_a.selected = false;
+				this.ry_ta_a_a_a.selected = false;
+				this.ry_whole_rest.selected = false;
+				this.ry_tiri_tiri.selected = false;
+				this.ry_ti_tiri.selected = false;
+				this.ry_tiri_ti.selected = false;
+				this.ry_sync_co_pa.selected = false;
+				this.ry_tai_ti.selected = false;
+				this.ry_ti_tai.selected = false;
+				this.ry_ti.selected = false;
+				this.ry_tiri.selected = false;
+				this.ry_tim_ri.selected = false;
+				this.ry_ri_tim.selected = false;
+				this.ry_tri_o_la.selected = false;
+				this.ry_ti_ti_ti.selected = false;
+				this.ry_ta_ti.selected = false;
+				this.ry_ti_ta.selected = false;
+				this.ry_tai.selected = false;
+				this.ry_tim_ri_ti.selected = false;
+				this.ry_ti_tim_ri.selected = false;
+				this.ry_tie.selected = false;
+				this.ry_other.selected = false;
+				this.ry_rest.selected = false;
+				
+				//Uses tab values
+				this.txtGradeLevel.text = '';
+				this.tgl1.selected = false;
+				this.tgl2.selected = false;
+				this.tgl3.selected = false;
+				this.tgl4.selected = false;
+				this.tgl5.selected = false;
+				this.tgl6.selected = false;
+				this.tgl7.selected = false;
+				this.tgl8.selected = false;
+				this.tglK.selected = false;
+				this.tglPreK.selected = false;
+				this.tglHighSchool.selected = false;
+				this.tglOlder.selected = false;
+				
+				
+			}
+			
+			protected function cboTitleSelection_changeHandler(event:ListEvent):void
+			{
+				this.intSongID = (int(this.cboTitleSelection.selectedItem.data));
+				this.getSongDetailsResult.token  = this.kodaly.getSongDetails(this.intSongID);
+				
+			}
+			
+			protected function btnCancelClick(event:MouseEvent):void
+			{
+				this.tab.selectedIndex= 0;
+				this.setTabsEnabled();
+				this.currentState = 'State1';
+				
+			}
+			
+			protected function btnAddMelodicToSong_clickHandler(event:MouseEvent):void
+			{
+				
+				var newMelodicContext:MelodicContext = new MelodicContext();
+				newMelodicContext.MPreparation = this.chkPreparation.selected;
+				newMelodicContext.MearlyPractice = this.chkPractice.selected;
+				newMelodicContext.MMiddlePractice = this.chkTuning.selected;
+				newMelodicContext.MlatePractice = this.chkOlder.selected;
+				//newMelodicContext.melodicElementContext = this.tiMelodicContext.text;
+				newMelodicContext.melodicContext = this.tiMelodicContext.text;
+				newMelodicContext.melodicElementKey = this.cboMelodicElements.selectedItem.data;
+				newMelodicContext.MelodicContextKey = this.cboMelodicContexts.selectedItem.data;
+				newMelodicContext.titleKey = this.intSongID;
+				this.insertMelodicContextResult.token =   this.kodaly.insertMelodicContext(newMelodicContext);
+			}
+			
+			protected function btnAddRythmicToSong_clickHandler(event:MouseEvent):void{
+				var newRythmicContext:RhythmicContext = new RhythmicContext();
+				newRythmicContext.titleKey = this.intSongID;
+				newRythmicContext.rEarly = this.chkPracticeRythm.selected;
+				newRythmicContext.rLate = this.chkOlderRythm.selected;
+				newRythmicContext.rMiddle = this.chkTuningRythm.selected;
+				newRythmicContext.RPreparation = this.chkPreparationRythm.selected;
+				newRythmicContext.rhythmKey = this.cboRythmicElements.selectedItem.id;
+				this.insertRythmicContextResult.token = this.kodaly.insertRythmicContext(newRythmicContext);
+				
+			}
+			
+			protected function btnAddRythmicToSongPrepare_clickHandler(event:MouseEvent):void{
+				this.turnRythmContextOn();
+			}
+			
+			protected function insertMelodicContext_resultHandler(event:ResultEvent):void
+			{
+				this.getMelodicContextResult.token = this.kodaly.getMelodicContextsForSong (this.intSongID);
+				this.turnMelContextOff();
+			}
+			
+			protected function deleteSongContextRecordResult_resultHandler(event:ResultEvent):void
+			{
+				this.getMelodicContextResult.token = this.kodaly.getMelodicContextsForSong (this.intSongID);
+				this.turnMelContextOff();
+				
+			}
+			
+			protected function btnDeleteMelContextRecord_clickHandler(event:MouseEvent):void
+			{
+				this.deleteSongContextRecordResult.token = this.kodaly.deleteMelodicContextForSong(int(this.melodicContexts.selectedItem.id));
+				
+			}
+			
+			protected function btnDeleteRythmicContext(event:MouseEvent):void{
+				this.deleteRythmicContextForSongResult.token = this.kodaly.deleteRythmicContextForSong(int(this.dgRythmicContexts.selectedItem.id));
+			}
+			
+			protected function btnAddNewMelContext_clickHandler(event:MouseEvent):void
+			{
+				this.turnMelContextOn();
+				this.clearMelContext();
+				
+			}
+			
+			protected function turnMelContextOn():void{
+				this.lblMelodicContext.visible = true;
+				this.lblMelodicElement.visible = true;
+				this.cboMelodicElements.visible = true;
+				this.cboMelodicContexts.visible = true;
+				this.chkOlder.visible = true;
+				this.chkPractice.visible = true;
+				this.chkPreparation.visible = true;
+				this.chkTuning.visible = true;
+				this.btnAddMelodicToSong.visible = true;
+				this.btnCancelMelContext.visible = true;
+				//this.tiMelodicContext.visible = true;
+				
+			}
+			
+			protected function turnMelContextOff():void{
+				this.lblMelodicContext.visible = false;
+				this.lblMelodicElement.visible = false;
+				this.cboMelodicElements.visible = false;
+				this.cboMelodicContexts.visible = false;
+				this.chkOlder.visible = false;
+				this.chkPractice.visible = false;
+				this.chkPreparation.visible = false;
+				this.chkTuning.visible = false;
+				this.btnAddMelodicToSong.visible = false;
+				this.btnCancelMelContext.visible = false;
+				this.tiMelodicContext.visible = false;
+			}
+			
+			protected function clearMelContext():void{
+
+				this.cboMelodicElements.selectedItem = null;
+				//this.cboMelodicContexts.visible = false;
+				this.chkOlder.selected = false;
+				this.chkPractice.selected = false;
+				this.chkPreparation.selected = false;
+				this.chkTuning.selected = false;
+				this.tiMelodicContext.text = '';
+			}
+			
+			protected function turnRythmContextOn():void{
+				this.cboRythmicElements.visible = true;
+				this.lblRythmicElement.visible = true;
+				this.chkOlderRythm.visible = true;
+				this.chkPracticeRythm.visible = true;
+				this.chkPreparationRythm.visible = true;
+				this.chkTuningRythm.visible= true;
+				this.btnAddRythmicToSong.visible = true;
+				this.btnCancelRythmContext.visible = true;
+			}
+			
+			protected function turnRythmContextOff():void{
+				this.cboRythmicElements.visible = false;
+				this.lblRythmicElement.visible = false;
+				this.chkOlderRythm.visible = false;
+				this.chkPracticeRythm.visible = false;
+				this.chkPreparationRythm.visible = false;
+				this.chkTuningRythm.visible= false;
+				this.btnAddRythmicToSong.visible = false;
+				this.btnCancelRythmContext.visible = false;
+			}
+			
+			protected function turnPartWorkOff():void{
+				this.lblPartWork1.visible = false;
+				this.lblParWork2.visible = false;
+				this.cboPartWorkNames.visible = false;
+				this.tiPartWorkContext.visible = false;
+				this.btnDeletePartWork.enabled = false;
+				this.btnSavePart.visible = false;
+			}
+			
+			protected function turnPartWorkOn():void{
+				this.lblPartWork1.visible = true;
+				this.lblParWork2.visible = true;
+				this.cboPartWorkNames.visible = true;
+				this.tiPartWorkContext.visible = true;
+				this.btnSavePart.visible = true;
+				
+			}
+			protected function btnPed_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.turnMelContextOff();
+				this.turnRythmContextOff();
+				
+				
+			}
+			
+			protected function turnSongTypesOn():void{
+				this.btnAddSongTypeForSong.visible = true;
+				this.cboSongTypes.visible = true;
+				this.btnDeleteSongTypeForSong.enabled = false;
+				
+			}
+			protected function turnSongTypesOff():void{
+				this.btnAddSongTypeForSong.visible = false;
+				this.cboSongTypes.visible = false;
+				this.btnDeleteSongTypeForSong.enabled = false;
+				
+			}
+			
+			protected function turnGameTypesOff():void{
+				this.btnSaveGameType.visible = false;
+				this.cboGameTypes.visible = false;
+				this.cboRelatedGameTypes.visible = false;
+				this.lblGameTypes.visible = false;
+				this.lblRelatedSubGameTypes.visible = false;
+			}
+			
+			protected function turnGameTypesOn():void{
+				this.btnSaveGameType.visible = true;
+				this.cboGameTypes.visible = true;
+				this.cboRelatedGameTypes.visible = true;
+				this.lblGameTypes.visible = true;
+				this.lblRelatedSubGameTypes.visible = true;
+			}
+			
+			protected function editSongTypes_clickHandler(event:MouseEvent):void{
+				this.turnSongTypesOn();
+			}
+			
+			protected function btnCancelMelContext_clickHandler(event:MouseEvent):void
+			{
+				this.turnMelContextOff();
+				
+			}
+			
+			protected function insertRythmicContextResult_resultHandler(event:ResultEvent):void
+			{
+				this.turnRythmContextOff();
+				this.getRythmicContextResult.token = this.kodaly.getRythmicContextsForSong (this.intSongID);
+				
+				
+			}
+			
+			protected function btnPed_clickHandler(event:MouseEvent):void
+			{
+				if (!this.intSongID){
+					Alert.show("You must save the new song before adding this fields");
+				}
+				
+			}
+			
+	
+			
+			protected function btnCancelRythmContext_clickHandler(event:MouseEvent):void
+			{
+				this.turnRythmContextOff();
+				
+			}
+			
+			protected function deleteRythmicContextForSongResult_resultHandler(event:ResultEvent):void
+			{
+				this.getRythmicContextResult.token = this.kodaly.getRythmicContextsForSong (this.intSongID);
+				
+			}
+			
+			protected function dgSongTypes_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.getSongTypesForSongResult.token = this.kodaly.getSongTypesForSong(this.intSongID);
+				
+			}
+			
+			protected function cboSongTypes_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.getSongTypesResult.token = this.kodaly.getSongTypes();
+				
+			}
+			
+			protected function btnAddSongType_clickHandler(event:MouseEvent):void
+			{
+				var songTypeRecord:SongTypesForSong = new SongTypesForSong();
+				songTypeRecord.titleKey = this.intSongID;
+				songTypeRecord.songTypeKey = this.cboSongTypes.selectedItem.data;
+				this.insertSongTypeRecordResult.token = this.kodaly.insertSongTypeForSong(songTypeRecord);
+				this.turnSongTypesOff();
+				
+			}
+			
+			protected function insertSongTypeRecordResult_resultHandler(event:ResultEvent):void
+			{
+				this.getSongTypesForSongResult.token = this.kodaly.getSongTypesForSong(this.intSongID);
+				
+			}
+			
+			protected function deleteSongType_clickHandler(event:MouseEvent):void
+			{
+				this.getDeleteSongTypeResult.token = this.kodaly.deleteSongTypeForSong(int(this.dgSongTypes.selectedItem.id));
+				
+			}
+			
+			protected function getDeleteSongTypeResult_resultHandler(event:ResultEvent):void
+			{
+				this.getSongTypesForSongResult.token = this.kodaly.getSongTypesForSong(this.intSongID);
+				this.turnSongTypesOff();
+				
+			}
+			
+			protected function uses_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.turnSongTypesOff();
+				this.turnGameTypesOff();
+				this.btnDeleteGame.enabled=false;
+				this.turnFiguresOff();
+				this.turnPartWorkOff();
+				this.turnSubjectsOff();
+			}
+			
+			
+			protected function dataGrid_creationCompleteHandler(event:FlexEvent):void
+			{
+				getGamesForSongResult.token = kodaly.getGamesForSong(this.intSongID);
+			}
+			
+			protected function loadGameTypes():void{
+				this.getGameTypesResult.token = this.kodaly.getGameTypes();
+			}
+			
+			protected function cboGameTypes_changeHandler(event:ListEvent):void
+			{
+				this.getRelatedGamesResult.token = this.kodaly.getRelatedGameTypes(int(this.cboGameTypes.selectedItem.data));
+				
+			}
+			
+			protected function cboRelatedGameTypes_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.getRelatedGamesResult.token = this.kodaly.getRelatedGameTypes(19);
+				
+			}
+			
+			protected function insertGameTypeForSongResult_resultHandler(event:ResultEvent):void
+			{
+				//handles refreshes for both new games and deletes...
+				getGamesForSongResult.token = kodaly.getGamesForSong(this.intSongID);
+				this.btnDeleteGame.enabled = false;
+				
+			}
+			
+			
+			
+			protected function btnSaveGameType_clickHandler(event:MouseEvent):void
+			{
+				var gameTypes:GameTypesForSong = new GameTypesForSong();
+				 gameTypes.gameTypeKey = this.cboGameTypes.selectedItem.data;
+				 gameTypes.subGameTypeKey = this.cboRelatedGameTypes.selectedItem.data;
+				 gameTypes.titleKey = this.intSongID;
+				 this.insertGameTypeForSongResult.token = this.kodaly.insertGameTypeForSong(gameTypes);
+				 this.turnGameTypesOff();
+				
+			}
+			
+		
+			
+			protected function btnDeleteGame_clickHandler(event:MouseEvent):void
+			{
+				
+				this.deleteGameForSongResult.token = this.kodaly.deleteGameTypeForSong(int(this.dataGrid.selectedItem.id));
+			}
+			
+			protected function btnGameTypeView_clickHandler(event:MouseEvent):void
+			{
+				this.turnGameTypesOn();
+				
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.btnDeleteGame.enabled = true;
+				
+			}
+			
+			protected function handleFiguresCreationComplete():void{
+				this.getFiguresResult.token = this.kodaly.getFigures();
+			}
+			
+			
+			protected function dataGrid2_creationCompleteHandler(event:FlexEvent):void
+			{
+				getFiguresForSongResult.token = kodaly.getFiguresForSong(this.intSongID);
+			}
+			
+			protected function btnAddFigure_clickHandler(event:MouseEvent):void
+			{
+				var figuresForSong:FiguresForSong = new FiguresForSong();
+				figuresForSong.Title_Key = this.intSongID;
+				figuresForSong.Figure_Title_ID = int(this.cboFigures.selectedItem.data);
+				this.addFigureToSongResult.token =  this.kodaly.addFigureToSong(figuresForSong);
+				
+			}
+			
+			protected function addFigureToSongResult_resultHandler(event:ResultEvent):void
+			{
+				getFiguresForSongResult.token = kodaly.getFiguresForSong(this.intSongID);
+				this.turnFiguresOff();
+				
+			}
+			protected function turnFiguresOff():void{
+				this.cboFigures.visible = false;
+				this.btnAddFigure.visible = false;
+				this.lblFigures.visible = false;
+				this.btnDeleteFigure.enabled = false;
+			}
+			protected function turnFiguresOn():void{
+				this.cboFigures.visible = true;
+				this.btnAddFigure.visible = true;
+				this.lblFigures.visible = true;
+			}
+			
+			protected function turnSubjectsOff():void{
+				this.cboSubjects.visible = false;
+				this.cboSubSubjects.visible = false;
+				this.btnDeleteSubject.enabled = false;
+				this.btnSaveSubject.visible = false;
+				this.lblSubjects.visible = false;
+				this.lblSubSubjects.visible = false;
+				
+			}
+			
+			protected function turnSubjectsOn():void{
+				this.cboSubjects.visible = true;
+				this.cboSubSubjects.visible = true;
+				this.btnDeleteSubject.enabled = false;
+				this.btnSaveSubject.visible = true;
+				this.lblSubjects.visible = true;
+				this.lblSubSubjects.visible = true;
+				
+			}
+			
+			protected function btnAddFigureDisplay_clickHandler(event:MouseEvent):void
+			{
+				this.turnFiguresOn();
+				
+			}
+			
+			protected function dataGrid2_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.btnDeleteFigure.enabled = true;
+			}
+			
+			protected function deleteFigureFromSongResult_resultHandler(event:ResultEvent):void
+			{
+				getFiguresForSongResult.token = kodaly.getFiguresForSong(this.intSongID);
+				this.btnDeleteFigure.enabled = false;
+				
+			}
+			
+			protected function btnDeleteFigure_clickHandler(event:MouseEvent):void
+			{
+				this.deleteFigureFromSongResult.token = this.kodaly.deleteFigureFromSong(int(this.dataGrid2.selectedItem.Figure_Title_ID));
+				
+			}
+			
+			protected function dgSongTypes_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.btnDeleteSongTypeForSong.enabled = true;
+				
+			}
+			
+			
+			protected function dataGrid3_creationCompleteHandler(event:FlexEvent):void
+			{
+				getPartWorkForSongResult.token = kodaly.getPartWorkForSong(this.intSongID);
+			}
+			
+			protected function handlePartWorkNames():void{
+				this.getPartWorkNamesResult.token = kodaly.getPartWorkNames();
+			}
+			
+			protected function btnAddPartWork_clickHandler(event:MouseEvent):void
+			{
+				this.turnPartWorkOn();
+				
+			}
+			
+			protected function dataGrid3_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.btnDeletePartWork.enabled = true;
+				
+			}
+			
+			protected function btnSavePart_clickHandler(event:MouseEvent):void
+			{
+				var newPartWork:PartWorkForSong = new PartWorkForSong();
+				newPartWork.titleKey = this.intSongID;
+				newPartWork.partWorkKey = this.cboPartWorkNames.selectedItem.data;
+				newPartWork.partWorkName = this.tiPartWorkContext.text;
+				this.insertPartWorkForSongResult.token = this.kodaly.insertPartWorkForSong(newPartWork);
+				this.tiPartWorkContext.text = '';
+				
+			}
+			
+			protected function insertPartWorkForSongResult_resultHandler(event:ResultEvent):void
+			{
+				this.getPartWorkForSongResult.token = this.kodaly.getPartWorkForSong(this.intSongID);
+				this.turnPartWorkOff();
+			}
+			
+			protected function btnDeletePartWork_clickHandler(event:MouseEvent):void
+			{
+				this.deletePartWorkForSongResult.token = this.kodaly.deletePartWorkForSong (int(this.dataGrid3.selectedItem.titlePartKey));
+				this.getPartWorkForSongResult.token = this.kodaly.getPartWorkForSong(this.intSongID);
+				this.btnDeletePartWork.enabled = false;
+			}
+			
+			
+			protected function dataGrid4_creationCompleteHandler(event:FlexEvent):void
+			{
+				getSubjectsForSongResult.token = kodaly.getSubjectsForSong(this.intSongID);
+			}
+			
+			protected function cboSubjects_changeHandler(event:ListEvent):void
+			{
+				this.getRelatedSubjectsResult.token = this.kodaly.getRelatedSubjects(int(this.cboSubjects.selectedItem.data));
+				
+			}
+			
+			
+			protected function btnSaveSubject_clickHandler(event:MouseEvent):void
+			{	
+				var newSubject:SubjectsForSong = new SubjectsForSong();
+				newSubject.titleKey = this.intSongID;
+				newSubject.subjectKey = int(this.cboSubjects.selectedItem.data);
+				newSubject.subSubjectKey = int(this.cboSubSubjects.selectedItem.data);
+				insertNewSubjectResult.token = kodaly.insertNewSubject(newSubject);
+			}
+			
+			protected function insertNewSubjectResult_resultHandler(event:ResultEvent):void
+			{
+				this.getSubjectsForSongResult.token = this.kodaly.getSubjectsForSong(this.intSongID);
+				this.turnSubjectsOff();
+			}
+			
+			
+			protected function btnDeleteSubject_clickHandler(event:MouseEvent):void
+			{
+				deleteSubjectFromSongResult.token = kodaly.deleteSubjectFromSong(int(this.dataGrid4.selectedItem.ID_Title_Subject));
+			}
+			
+			protected function deleteSubjectFromSongResult_resultHandler(event:ResultEvent):void
+			{
+				this.getSubjectsForSongResult.token = kodaly.getSubjectsForSong(this.intSongID);
+				
+				this.btnDeleteSubject.enabled = false;
+				
+			}
+			
+			protected function btnAddSubject_clickHandler(event:MouseEvent):void
+			{
+				this.turnSubjectsOn();
+				
+			}
+			
+			protected function dataGrid4_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.btnDeleteSubject.enabled = true;
+				
+			}
+			
+			
+			protected function fileNames_CreationComplete():void{
+				this.audioPLayer.stop();
+			}
+			
+			
+			
+			protected function insertNewSongResult2_resultHandler(event:ResultEvent):void
+			{
+				this.intSongID = event.result[0].newID;
+				getTitlesResult.token = kodaly.getTitles();
+				this.setTabsEnabled();
+				this.mode = "EDIT";
+				this.btnSaveNewSong.visible = false;
+				this.btnSaveSongEdits.visible = true;
+				this.getSongTypesForSongResult.token = this.kodaly.getSongTypesForSong(intSongID);
+				this.getGamesForSongResult.token =  this.kodaly.getGamesForSong(intSongID);
+				this.getMelodicContextResult.token = this.kodaly.getMelodicContextsForSong(intSongID);
+				this.getFiguresForSongResult.token = this.kodaly.getFiguresForSong(intSongID);
+				this.getMotivesForSongResult.token = this.kodaly.getMotivesForSong(intSongID);
+				this.getPartWorkForSongResult.token = this.kodaly.getPartWorkForSong(intSongID);
+				this.getRythmicContextResult.token = this.kodaly.getRythmicContextsForSong(intSongID);
+				this.getSubjectsForSongResult.token = this.kodaly.getSubjectsForSong(intSongID);
+				
+				
+				//this.currentState = '';
+				
+			}
+			
+			
+			protected function btnSaveNewSong_clickHandler(event:MouseEvent):void
+			{
+				
+				var newSongDetails:SongDetails = new SongDetails();
+				newSongDetails.Title = this.tiTitle.text;
+				newSongDetails.Alt_Title_1 = this.tiAltTitle1.text;
+				newSongDetails.Alt_Title_2 = this.tiAltTitle2.text;
+				newSongDetails.First_Line_Text = this.tiSongFirstLine.text;
+				newSongDetails.Informant = this.txtInformant.text;
+				newSongDetails.scaleID = this.cboScales.selectedItem.data;
+				newSongDetails.NOTE = this.cboStartingPitch.selectedItem.data;
+				newSongDetails.tonalCenterID = this.cboNotes.selectedItem.data;
+				newSongDetails.meterID = this.cboMeters.selectedItem.data;
+				newSongDetails.formID = this.cboForms.selectedItem.data;
+				newSongDetails.stateID = this.cboStates.selectedItem.data;
+				newSongDetails.regionID = this.cboRegions.selectedItem.data;
+				newSongDetails.rangeID = this.cboRange.selectedItem.data;
+				newSongDetails.toneSetID = this.tiToneSet.text;
+				newSongDetails.formAnalysisStr = this.tiFormAnalysisStr.text;
+				newSongDetails.Informant = this.txtInformant.text;
+				newSongDetails.Analyzed = this.chkAnlayzed.selected;
+				newSongDetails.inFinale = this.chkNotated.selected;
+				newSongDetails.Proofed_Flag = this.chkProofed.selected;
+				newSongDetails.IP_Status = this.chkIP.selected;
+				newSongDetails.LoC = this.chkLoC.selected;
+				newSongDetails.Child = this.chkChild.selected;
+				newSongDetails.Comments = this.richTextEditor.text;
+				newSongDetails.Publication = this.txtSource.text;
+				newSongDetails.Song_Background = this.txtSong_Background.text;
+				
+				insertNewSongResult2.token = kodaly.insertNewSong(newSongDetails);
+			}
+			
+			private function enableAudioPlayer():void{
+				this.audioPLayer.enabled = true;
+			}
+			
+			protected function btnSaveSongEdits_clickHandler(event:MouseEvent):void
+			{
+				var newSongDetails:SongDetails = new SongDetails();
+				newSongDetails.Grade_String = this.txtGradeLevel.text;
+				newSongDetails.ID = this.intSongID;
+				newSongDetails.Title = this.tiTitle.text;
+				newSongDetails.Alt_Title_1 = this.tiAltTitle1.text;
+				newSongDetails.Alt_Title_2 = this.tiAltTitle2.text;
+				newSongDetails.First_Line_Text = this.tiSongFirstLine.text;
+				newSongDetails.Informant = this.txtInformant.text;
+				newSongDetails.scaleID = this.cboScales.selectedItem.data;
+				newSongDetails.NOTE = this.cboStartingPitch.selectedItem.data;
+				newSongDetails.tonalCenterID = this.cboNotes.selectedItem.data;
+				newSongDetails.meterID = this.cboMeters.selectedItem.data;
+				newSongDetails.formID = this.cboForms.selectedItem.data;
+				newSongDetails.stateID = this.cboStates.selectedItem.data;
+				newSongDetails.regionID = this.cboRegions.selectedItem.data;
+				newSongDetails.rangeID = this.cboRange.selectedItem.data;
+				newSongDetails.toneSetID = this.tiToneSet.text;
+				newSongDetails.formAnalysisStr = this.tiFormAnalysisStr.text;
+				newSongDetails.Informant = this.txtInformant.text;
+				newSongDetails.Analyzed = this.chkAnlayzed.selected;
+				newSongDetails.inFinale = this.chkNotated.selected;
+				newSongDetails.Proofed_Flag = this.chkProofed.selected;
+				newSongDetails.IP_Status = this.chkIP.selected;
+				newSongDetails.LoC = this.chkLoC.selected;
+				newSongDetails.Child = this.chkChild.selected;
+				newSongDetails.Comments = this.richTextEditor.text;
+				newSongDetails.Publication = this.txtSource.text;
+				newSongDetails.Song_Background = this.txtSong_Background.text;
+				newSongDetails.Starting_PitchID = this.cboStartingPitch.selectedItem.data;
+				newSongDetails.ethnicityID = this.cboEthnic.selectedItem.data;
+				//new variables
+				newSongDetails.one = this.tgl1.selected;
+				newSongDetails.two = this.tgl2.selected;
+				newSongDetails.three = this.tgl3.selected;
+				newSongDetails.four = this.tgl4.selected;
+				newSongDetails.five = this.tgl5.selected;
+				newSongDetails.six = this.tgl6.selected;
+				newSongDetails.seven = this.tgl7.selected;
+				newSongDetails.eight = this.tgl8.selected;
+				newSongDetails.ten = this.tglHighSchool.selected;
+				newSongDetails.zero = this.tglOlder.selected;
+				newSongDetails.ch = this.tglPreK.selected;
+				newSongDetails.k = this.tglK.selected;
+				
+				newSongDetails.ta = this.ry_ta.selected;
+				newSongDetails.ti_ti = this.ry_ti_ti.selected;
+				newSongDetails.rest = this.ry_rest.selected;
+				newSongDetails.ta_a = this.ry_ta_a.selected;
+				newSongDetails.half_rest = this.ry_halfrest.selected;
+				newSongDetails.ta_a_a = this.ry_ta_a_a.selected;
+				newSongDetails.ta_a_a_a = this.ry_ta_a_a_a.selected;
+				newSongDetails.whole_rest = this.ry_whole_rest.selected;
+				newSongDetails.tiri_tiri = this.ry_tiri_tiri.selected;
+				newSongDetails.ti_tiri = this.ry_ti_tiri.selected;
+				newSongDetails.tiri_ti = this.ry_tiri_ti.selected;
+				
+				newSongDetails.tai_ti = this.ry_tai_ti.selected;
+				newSongDetails.ti_tai = this.ry_ti_tai.selected;
+				newSongDetails.eighth_rest = this.ry_eigthRest.selected;
+				newSongDetails.ti = this.ry_ti.selected;
+				newSongDetails.tiri = this.ry_tiri.selected;
+				newSongDetails.tim_ri = this.ry_tim_ri.selected;
+				newSongDetails.ri_tim = this.ry_ri_tim.selected;
+				newSongDetails.tri_o_la = this.ry_tri_o_la.selected;
+				newSongDetails.ti_ti_ti = this.ry_ti_ti_ti.selected;
+				newSongDetails.ta_ti = this.ry_ta_ti.selected;
+				newSongDetails.ti_ta = this.ry_ti_ta.selected;
+				newSongDetails.tai = this.ry_tai.selected;
+				newSongDetails.tim_ri_ti = this.ry_tim_ri_ti.selected;
+				newSongDetails.ri_tim_ri = this.ry_ri_tim_ti.selected;
+				newSongDetails.tie = this.ry_tie.selected;
+				newSongDetails.other_other = this.ry_other.selected;
+				newSongDetails.Anac = this.ry_anacrusis.selected;
+				newSongDetails.Ri = this.ry_ri.selected;
+				newSongDetails.Tim = this.ry_tim.selected;
+				newSongDetails.ri_tim_ri = this.ry_tim_ri_ti.selected;//refactor ri tim ri
+				newSongDetails.ti_ta_ti = this.ry_sync_co_pa.selected;
+				newSongDetails.ti_tim_ri = this.ry_ti_tim_ri.selected;
+				newSongDetails.Notation_File_Name = this.tiNotationFileName.text;
+				newSongDetails.formTypeID = this.cboFormType.selectedItem.data;
+				newSongDetails.Recording_Flag = this.chkHasRecording.selected;
+				
+				newSongDetails.Game = this.chkGame.selected;
+				
+				this.updateSongResult.token = this.kodaly.updateSong(newSongDetails);
+				
+				
+				
+			}
+			
+			protected function updateSongResult_resultHandler(event:ResultEvent):void
+			{
+				getTitlesResult.token = kodaly.getTitles();
+				this.currentState = '';
+				
+			}
+			
+			private function confirmDelete():void
+			{
+				Alert.show("Are you sure you want to delete this song? There is no going back....",
+					"Confirm delete",Alert.YES|Alert.NO,null,deleteHandler,null,Alert.NO);
+			}
+			
+			private function deleteHandler(event:CloseEvent):void {
+				if (event.detail==Alert.YES){
+					this.deleteSongResult.token = this.kodaly.deleteSong(int(this.dgBasicSongs.selectedItem.ID));
+				}else if(event.detail==Alert.NO){
+					return;
+				}
+			}
+			
+			protected function deleteSong_resultHandler(event:ResultEvent):void
+			{
+				
+				this.getTitlesResult.token = this.kodaly.getTitles();
+				this.btnDeleteSong.enabled = false;
+			}
+			
+			protected function enableDeleteButton():void{
+				this.btnDeleteSong.enabled = true;
+			}
+			
+			
+			protected function getMotivesForSong(title_ID:Number):void
+			{
+				getMotivesForSongResult.token = kodaly.getMotivesForSong(this.intSongID);
+			}
+			
+			protected function btnAddMotive_clickHandler(event:MouseEvent):void
+			{
+				if (this.tiMotive.text != ''){
+				 var newMotive:Motives = new Motives();
+				 newMotive.title_ID = this.intSongID;
+				 newMotive.motive = this.tiMotive.text;
+				insertMotiveToSong(newMotive);
+				}
+			}
+			
+			
+			protected function insertMotiveToSong(motive:Motives):void
+			{
+				insertMotiveToSongResult.token = kodaly.insertMotiveToSong(motive);
+			}
+			
+			protected function insertMotiveToSongResult_resultHandler(event:ResultEvent):void
+			{
+				this.getMotivesForSongResult.token = kodaly.getMotivesForSong(this.intSongID);
+				this.tiMotive.text = '';
+				
+				
+			}
+			
+			protected function dgMotives_clickHandler(event:MouseEvent):void
+			{
+				this.btnDeleteMotive.visible = true;				
+			}
+			
+			protected function dgMotives_focusOutHandler(event:FocusEvent):void
+			{
+				//this.btnDeleteMotive.visible = false;
+				
+			}
+			
+			
+			protected function btnDeleteMotive_clickHandler(event:MouseEvent):void
+			{
+				var motiveDelete:Motives = new Motives();
+				motiveDelete.title_ID = this.intSongID;
+				motiveDelete.motive = this.dgMotives.selectedItem.motive;
+				deleteMotiveForSongResult.token = kodaly.deleteMotiveForSong(motiveDelete);
+			}
+			
+			protected function deleteMotiveForSongResult_resultHandler(event:ResultEvent):void
+			{
+				this.getMotivesForSongResult.token = kodaly.getMotivesForSong(this.intSongID);
+				this.btnDeleteMotive.visible = false;
+			}
+			
+			protected function getMelodicContextResult_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function cboMelodicElements_changeHandler(event:ListEvent):void
+			{
+				this.getMelContextsForElement(this.cboMelodicElements.selectedItem.data);
+				
+			}
+			
+			
+			protected function getMelContextsForElement(element:Number):void
+			{
+				getMelContextsForElementResult.token = kodaly.getMelContextsForElement(element);
+			}
+			
+			
+			protected function dataGrid5_creationCompleteHandler(event:FlexEvent):void
+			{
+				getNewsResult.token = kodaly.getNews();
+			}
+			
+			protected function btnNews_clickHandler(event:MouseEvent):void
+			{
+				this.currentState = 'news';
+				
+			}
+			
+			
+			protected function getNewsItem(ID:Number):void
+			{
+				getNewsItemResult.token = kodaly.getNewsItem(ID);
+			}
+			
+			protected function getNewsItemResult_resultHandler(event:ResultEvent):void
+			{
+				this.tiNewsHeadline.text = event.result[0].newsItemHeadline;
+				this.tiTeaser.text = event.result[0].newsTeaser;
+				this.tiNews.text = event.result[0].newsItemCopy;
+				this.chkPostNews.selected = event.result[0].newsItemPostSwitch;
+				this.tiDateString.text = event.result[0].dateString;
+				this.tiPostDate.text = event.result[0].postDate;
+			}
+			
+			protected function btnSaveNewsEdit_clickHandler(event:MouseEvent):void
+			{
+				var newDate:Date = new Date(this.tiPostDate.text);
+				var updatedNewsItem:News = new News();
+				updatedNewsItem.dateString = this.tiDateString.text;
+				updatedNewsItem.newsItemCopy = this.tiNews.text;
+				updatedNewsItem.newsItemHeadline = this.tiNewsHeadline.text;
+				updatedNewsItem.newsItemPostSwitch = this.chkPostNews.selected;
+				updatedNewsItem.newsTeaser = this.tiTeaser.text;
+				updatedNewsItem.postDate = newDate;
+				updatedNewsItem.id = this.dgNewsItems.selectedItem.id;
+				
+				this.updateNewsItem(updatedNewsItem);
+			}
+			
+			
+			protected function updateNewsItem(newsItem:News):void
+			{
+				updateNewsItemResult.token = kodaly.updateNewsItem(newsItem);
+			}
+			
+			protected function updateNewsItemResult_resultHandler(event:ResultEvent):void
+			{
+				getNewsResult.token = kodaly.getNews();
+				this.btnSaveNewsEdit.visible = false;
+			}
+			
+			protected function btnReturnFromNews_clickHandler(event:MouseEvent):void
+			{
+				this.currentState = '';
+				
+			}
+			
+			protected function btnCreateNewsItem_clickHandler(event:MouseEvent):void
+			{
+				this.tiPostDate.text = '';
+				this.tiDateString.text = '';
+				this.tiNews.text = '';
+				this.tiNewsHeadline.text = '';
+				this.chkPostNews.selected = false;
+				this.tiTeaser.text = '';
+				this.btnSaveNewNewsItem.visible = true;
+				this.btnSaveNewsEdit.visible = false;
+				this.btnCreateNewsItem.visible = false;
+				
+			}
+			
+			protected function btnSaveNewNewsItem_clickHandler(event:MouseEvent):void
+			{
+				var newDate:Date = new Date(this.tiPostDate.text);
+				newDate.hours = 7;
+				var updatedNewsItem:News = new News();
+				updatedNewsItem.dateString = this.tiDateString.text;
+				updatedNewsItem.newsItemCopy = this.tiNews.text;
+				updatedNewsItem.newsItemHeadline = this.tiNewsHeadline.text;
+				updatedNewsItem.newsItemPostSwitch = this.chkPostNews.selected;
+				updatedNewsItem.newsTeaser = this.tiTeaser.text;
+				updatedNewsItem.postDate = newDate;
+				this.createNewsItem(updatedNewsItem);
+				
+			}
+			
+			
+			protected function createNewsItem(newsItem:News):void
+			{
+				createNewsItemResult.token = kodaly.createNewsItem(newsItem);
+			}
+			
+		
+			
+			protected function createNewsItemResult_resultHandler(event:ResultEvent):void
+			{
+				getNewsResult.token = kodaly.getNews();
+				this.btnCreateNewsItem.visible = true;
+				this.btnSaveNewNewsItem.visible = false;
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:states>
+		<s:State name="State1"/>
+		<s:State name="editContainer" />
+		<s:State name="news"/>
+	</s:states>
+	<fx:Declarations>
+		<s:CallResponder id="getTitlesForCBOResult"/>
+		<s:CallResponder id="getTitlesResult"/>
+		<s:CallResponder id="getStatesResult"/>
+		<s:CallResponder id="getRegionsResult"/>
+		<s:CallResponder id="getEthnicitiesResult" />
+		<s:CallResponder id="getScalesResult"/>
+		<s:CallResponder id="getNotesResult"/>
+		<s:CallResponder id="getRangeResult"/>
+		<s:CallResponder id="getMetersResult"/>
+		<s:CallResponder id="getFormsResult"/>
+		<s:CallResponder id="getFormTypeResult"/>
+		<s:CallResponder id="getStartingPitchResult"/>
+		<s:CallResponder id="getMelodicContextResult" result="getMelodicContextResult_resultHandler(event)"/>
+		<s:CallResponder id="getRythmicContextResult"/>
+		<s:CallResponder id="getRythmicContextsResult"/>
+		<s:CallResponder id="getMelodicElementsResult"/>
+		<s:CallResponder id="getMelodicContextsResult"/>
+		<s:CallResponder id="getSongTypesForSongResult"/>
+		<s:CallResponder id="getSongTypesResult"/>
+		<s:CallResponder id="getGameTypesResult"/>
+		<s:CallResponder id="getRelatedGamesResult"/>
+		<s:CallResponder id="getFiguresResult"/>
+		<s:CallResponder id="getPartWorkNamesResult"/>
+		<s:CallResponder id="getSubjectHeadingsResult"/>
+		<s:CallResponder id="getRelatedSubjectsResult"/>
+		
+		
+		<s:CallResponder id="getDeleteSongTypeResult" result="getDeleteSongTypeResult_resultHandler(event)"/>
+		<s:CallResponder id="insertMelodicContextResult" result="insertMelodicContext_resultHandler(event)"/>
+		<s:CallResponder id="insertRythmicContextResult" result="insertRythmicContextResult_resultHandler(event)"/>
+		<s:CallResponder id="insertSongTypeRecordResult" result="insertSongTypeRecordResult_resultHandler(event)"/>
+		<s:CallResponder id="insertGameTypeForSongResult" result="insertGameTypeForSongResult_resultHandler(event)"/>
+		<s:CallResponder id="deleteGameForSongResult" result="insertGameTypeForSongResult_resultHandler(event)"/>
+		<s:CallResponder id="addFigureToSongResult" result="addFigureToSongResult_resultHandler(event)"/>
+		<s:CallResponder id="deleteFigureFromSongResult" result="deleteFigureFromSongResult_resultHandler(event)"/>
+	
+		<s:CallResponder id="getSongDetailsResult" result="getSongDetailsResult_resultHandler(event)" />
+		<s:CallResponder id="deleteSongContextRecordResult" result="deleteSongContextRecordResult_resultHandler(event)" />
+		<s:CallResponder id="deleteRythmicContextForSongResult" result="deleteRythmicContextForSongResult_resultHandler(event)"/>
+		<kodaly:Kodaly id="kodaly"
+					   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+					   showBusyCursor="true"/>
+		<s:CallResponder id="getGamesForSongResult"/>
+		<s:CallResponder id="getFiguresForSongResult"/>
+		<s:CallResponder id="getPartWorkForSongResult"/>
+		<s:CallResponder id="insertPartWorkForSongResult" result="insertPartWorkForSongResult_resultHandler(event)"/>
+		<s:CallResponder id="deletePartWorkForSongResult"/>
+		<s:CallResponder id="getSubjectsForSongResult"/>
+		<s:CallResponder id="insertSongTypeForSongResult"/>
+		<s:CallResponder id="insertNewSubjectResult" result="insertNewSubjectResult_resultHandler(event)"/>
+		<s:CallResponder id="deleteSubjectFromSongResult" result="deleteSubjectFromSongResult_resultHandler(event)"/>
+		
+		<s:CallResponder id="insertNewSongResult2" result="insertNewSongResult2_resultHandler(event)"/>
+		<s:CallResponder id="updateSongResult" result="updateSongResult_resultHandler(event)"/>
+		<s:CallResponder id="deleteSongResult" result="deleteSong_resultHandler(event)"/>
+		<s:CallResponder id="getMotivesForSongResult"/>
+		<s:CallResponder id="insertMotiveToSongResult" result="insertMotiveToSongResult_resultHandler(event)"/>
+		<s:CallResponder id="deleteMotiveForSongResult" result="deleteMotiveForSongResult_resultHandler(event)"/>
+		<s:CallResponder id="getMelContextsForElementResult"/>
+		<s:CallResponder id="getNewsResult"/>
+		<s:CallResponder id="getNewsItemResult" result="getNewsItemResult_resultHandler(event)"/>
+		<s:CallResponder id="updateSongResult2"/>
+		<s:CallResponder id="updateNewsItemResult" result="updateNewsItemResult_resultHandler(event)"/>
+		<s:CallResponder id="createNewsItemResult" result="createNewsItemResult_resultHandler(event)"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Label includeIn="State1" x="292" y="21" fontFamily="Verdana" fontSize="26"
+			 text="Kodaly Database Maintenance Tool"/>
+	<s:DataGrid id="dgBasicSongs" includeIn="State1" x="182" y="75" width="710" height="521"
+				creationComplete="dgBasicSongs_creationCompleteHandler(event)"
+				dataProvider="{getTitlesResult.lastResult}" requestedRowCount="20"
+				sortableColumns="true" doubleClick="dgBasicSongs_doubleClickHandler(event)" doubleClickEnabled="true"
+			 click="enableDeleteButton()">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="ID" headerText="ID" width="35"></s:GridColumn>
+				<s:GridColumn dataField="Title" headerText="Title" width="300"></s:GridColumn>
+				<s:GridColumn dataField="First_Line_Text" headerText="First Line" width="300"></s:GridColumn>
+				<s:GridColumn dataField="Analyzed" headerText="Analyzed" width="40">
+					<s:itemRenderer>
+						<fx:Component>
+							<s:GridItemRenderer>
+								<s:CheckBox id="test200"  selected="{data.Analyzed}" x="24"/>
+							</s:GridItemRenderer>
+						</fx:Component>
+					</s:itemRenderer>
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	<mx:TabNavigator id="tab" includeIn="editContainer" x="14" y="110" width="958" height="589"
+					 creationPolicy="all">
+		<s:NavigatorContent width="100%" height="100%" label="Analysis" id="analysis">
+			<ns2:comboBox2 x="432" y="150" id="cboStates" dataProvider="{this.getStatesResult.lastResult}" />
+			<s:Label x="349" y="152" fontSize="16" text="State:"/>
+			<s:Label x="336" y="17" fontSize="16" text="Informant:"/>
+			<s:Label x="28" y="10" fontSize="16" text="General Comments:"/>
+			<s:Label x="27" y="237" fontSize="16" text="Song Background"/>
+			<s:Label x="339" y="64" fontSize="16" text="Source:"/>
+			<s:Label x="339" y="112" fontSize="16" text="First Line"/>
+			<s:Label x="348" y="204" fontSize="16" text="Ethnicity:"/>
+			<s:Label x="619" y="149" fontSize="16" text="Region"/>
+			<s:Label x="647" y="315" fontSize="16" text="Scale:"/>
+			<s:Label x="347" y="276" fontSize="16" text="Tonal Center:"/>
+			<s:Label x="347" y="311" fontSize="16" text="Tone Set:"/>
+			<s:Label x="645" y="275" fontSize="16" text="Range:"/>
+			<s:Label x="349" y="438" fontSize="16" text="Formal Analysis:"/>
+			<s:Label x="647" y="358" fontSize="16" text="FormType:"/>
+			<s:Label x="696" y="406" fontSize="16" text="Form Analysis String:"/>
+			<s:Label x="349" y="395" fontSize="16" text="Meter:"/>
+			<s:Label x="348" y="351" fontSize="16" text="Starting Pitch:"/>
+			<ns2:comboBox2 id="cboRegions" x="695" y="148" dataProvider="{this.getRegionsResult.lastResult}"/>
+			<ns2:comboBox2 id="cboEthnic" x="431" y="200"
+						   dataProvider="{this.getEthnicitiesResult.lastResult}"/>
+			<ns2:comboBox2 id="cboScales" x="744" y="315" width="165"
+						   dataProvider="{this.getScalesResult.lastResult}"/>
+			<ns2:comboBox2 id="cboNotes" x="472" y="271" dataProvider="{this.getNotesResult.lastResult}"/>
+			<ns2:comboBox2 id="cboRange" x="744" y="271" dataProvider="{this.getRangeResult.lastResult}"/>
+			<ns2:comboBox2 x="472" y="393" id="cboMeters" dataProvider="{this.getMetersResult.lastResult}" />
+			<ns2:comboBox2 id="cboForms" x="471" y="434" dataProvider="{this.getFormsResult.lastResult}"/>
+			<ns2:comboBox2 id="cboFormType" x="744" y="356" width="165"
+						   dataProvider="{this.getFormTypeResult.lastResult}"/>
+			<ns2:comboBox2 id="cboStartingPitch" x="472" y="351" dataProvider="{this.getStartingPitchResult.lastResult}"/>
+			<s:TextInput id="txtInformant" x="421" y="14" width="492"/>
+			<s:TextArea id="txtSource" x="421" y="52" width="492" height="49"/>
+			<s:TextInput id="tiFormAnalysisStr" x="649" y="434" width="260"/>
+			<s:TextInput id="tiSongFirstLine" x="421" y="109" width="492"/>
+			<s:TextArea id="richTextEditor" x="16" y="37" width="272" height="182"/>
+			<mx:HRule x="339" y="139" width="574" height="3"/>
+			<mx:HRule x="339" y="246" width="574" height="3"/>
+			<mx:VRule x="339" y="139" width="1" height="111"/>
+			<mx:VRule x="912" y="139" width="1" height="111"/>
+			<mx:HRule x="339" y="271" width="574" height="0"/>
+			<mx:HRule x="338" y="275" width="574" height="0"/>
+			<mx:HRule x="338" y="272" width="574" height="0"/>
+			<mx:HRule x="337" y="257" width="581" height="6"/>
+			<mx:HRule x="337" y="472" width="584" height="3"/>
+			<mx:VRule x="335" y="257" width="7" height="218"/>
+			<mx:VRule x="912" y="259" width="8" height="217"/>
+			<s:Button id="btnSaveNewSong" x="16" y="422" width="272" height="96"
+					  label="Save New Song" click="btnSaveNewSong_clickHandler(event)"/>
+			<s:Button id="btnSaveSongEdits" x="9" y="422" width="272" height="96"
+					  label="Save Song Edits" click="btnSaveSongEdits_clickHandler(event)"/>
+			<s:TextInput id="tiToneSet" x="473" y="310" width="159"/>
+			<s:TextArea id="txtSong_Background" x="16" y="257" width="272" height="118"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent width="100%" height="100%" label="Rhythms" id="tabRhythms">
+			<s:Image x="444" y="211" source="assets/tim.gif"/>
+			<s:Image x="61" y="10" source="assets/ta.gif"/>
+			<s:Image x="52" y="52" source="assets/ti-ti.gif"/>
+			<s:Image x="60" y="99" source="assets/rest.gif"/>
+			<s:Image x="61" y="171" source="assets/ta_a.gif"/>
+			<s:Image x="71" y="326" source="assets/ta-a-a-a.gif"/>
+			<s:Image x="70" y="272" source="assets/ta-a-a.gif"/>
+			<s:Image x="65" y="211" source="assets/half_rest.gif"/>
+			<s:Image x="74" y="369" source="assets/whole_rest.gif"/>
+			<s:Image x="220" y="10" source="assets/tiri_tiri.gif"/>
+			<s:Image x="222" y="55" source="assets/ti-tiri.gif"/>
+			<s:Image x="231" y="116" source="assets/tiri_ti.gif"/>
+			<s:Image x="231" y="168" source="assets/syn_co_pa.gif"/>
+			<s:Image x="231" y="210" source="assets/tai_ti.gif"/>
+			<s:Image x="232" y="265" source="assets/ti_tai.gif"/>
+			<s:Image x="253" y="306" source="assets/eighth_rest.gif"/>
+			<s:Image x="230" y="384" source="assets/ti.gif"/>
+			<s:Image x="440" y="10" source="assets/tiri.gif"/>
+			<s:Image x="444" y="66" source="assets/tim-ri.gif"/>
+			<s:Image x="444" y="111" source="assets/ri_ti_ri.gif"/>
+			<s:Image x="447" y="169" source="assets/ri.gif"/>
+			<s:Image x="444" y="268" source="assets/ri_tim.gif"/>
+			<s:Image x="437" y="320" source="assets/tri_o_la.gif"/>
+			<s:Image x="437" y="377" source="assets/tai.gif"/>
+			<s:Image x="648" y="-3" source="assets/ti_ti_ti.gif"/>
+			<s:Image x="641" y="41" source="assets/ta_ti.gif"/>
+			<s:Image x="647" y="97" source="assets/ti_ta.gif"/>
+			<s:Image x="643" y="156" source="assets/tim_ri_ti.gif"/>
+			<s:Image x="643" y="205" source="assets/ri_tim_ti.gif"/>
+			<s:Image x="640" y="258" source="assets/ti_tim_ri.gif"/>
+			<s:Image x="648" y="313" source="assets/anacrusis.gif"/>
+			<s:Image x="626" y="377" source="assets/tie.gif"/>
+			<s:Image x="834" y="177" source="assets/other.gif"/>
+			<s:Label x="13" y="19" fontSize="15" text="ta"/>
+			<s:Label x="8" y="67" fontSize="15" text="ti-ti"/>
+			<s:Label x="10" y="127" fontSize="15"  text="rest"/>
+			<s:Label x="8" y="186" fontSize="15" text="ta-a"/>
+			<s:Label x="4" y="239" fontSize="15" text="half rest"/>
+			<s:Label x="6" y="289" fontSize="15" text="ta-a-a"/>
+			<s:Label x="4" y="343" fontSize="15" text="ta-a-a-a"/>
+			<s:Label x="3" y="401" fontSize="15" text="whole rest"/>
+			<s:Label x="173" y="24" fontSize="15" text="tiri-tiri"/>
+			<s:Label x="171" y="69" fontSize="15" text="ti-tiri"/>
+			<s:Label x="171" y="125" fontSize="15" text="tiri-ti"/>
+			<s:Label x="162" y="182" fontSize="15" text="syn-co-pa"/>
+			<s:Label x="171" y="227" fontSize="15" text="tai-ti"/>
+			<s:Label x="171" y="277" fontSize="15" text="ti-tai"/>
+			<s:Label x="165" y="330" fontSize="15"   text="eighth rest"/>
+			<s:Label x="382" y="19" fontSize="15" text="tiri"/>
+			<s:Label x="379" y="69" fontSize="15" text="tim-ri"/>
+			<s:Label x="380" y="127" fontSize="15"  text="ri-ti-ri"/>
+			<s:Label x="381" y="182" fontSize="15" text="ri"/>
+			<s:Label x="378" y="229" fontSize="15" text="tim"/>
+			<s:Label x="380" y="281" fontSize="15" text="ri-tim"/>
+			<s:Label x="380" y="341" fontSize="15" text="tri-o-la"/>
+			<s:Label x="380" y="401" fontSize="15" text="tai"/>
+			<s:Label x="586" y="20" fontSize="15" text="ti-ti-ti"/>
+			<s:Label x="586" y="62" fontSize="15" text="ta-ti"/>
+			<s:Label x="586" y="119" fontSize="15" text="ti-ta"/>
+			<s:Label x="580" y="181" fontSize="15" text="tim-ri-ti"/>
+			<s:Label x="578" y="232" fontSize="15" text="ri-tim-ri"/>
+			<s:Label x="580" y="280" fontSize="15" text="ti-tim-ri"/>
+			<s:Label x="587" y="398" fontSize="15" text="tie"/>
+			<s:Label x="581" y="332" fontSize="15" text="anacrusis"/>
+			<s:Label x="821" y="205" fontSize="15" text="other"/>
+			<s:Label x="173" y="395" width="21" fontSize="15" text="ti"/>
+			<mx:VRule x="150" y="10" width="1" height="437"/>
+			<mx:VRule x="352" y="10" width="1" height="437"/>
+			<mx:VRule x="552" y="11" width="1" height="437"/>
+			<mx:VRule x="797" y="9" width="1" height="437"/>
+			<s:CheckBox id="ry_ta" x="114" y="20"/>
+			<s:CheckBox id="ry_ti_ti" x="114" y="63"/>
+			<s:CheckBox id="ry_rest" x="114" y="121"/>
+			<s:CheckBox id="ry_ta_a" x="114" y="184"/>
+			<s:CheckBox id="ry_halfrest" x="114" y="237"/>
+			<s:CheckBox id="ry_ta_a_a" x="114" y="281"/>
+			<s:CheckBox id="ry_ta_a_a_a" x="114" y="337"/>
+			<s:CheckBox id="ry_whole_rest" x="114" y="398"/>
+			<s:CheckBox id="ry_tiri_tiri" x="313" y="18"/>
+			<s:CheckBox id="ry_ti_tiri" x="313" y="61"/>
+			<s:CheckBox id="ry_tiri_ti" x="313" y="119"/>
+			<s:CheckBox id="ry_sync_co_pa" x="313" y="179"/>
+			<s:CheckBox id="ry_tai_ti" x="313" y="225"/>
+			<s:CheckBox id="ry_ti_tai" x="313" y="276"/>
+			<s:CheckBox id="ry_eigthRest" x="313" y="330"/>
+			<s:CheckBox id="ry_ti" x="313" y="394"/>
+			<s:CheckBox id="ry_tiri" x="508" y="19"/>
+			<s:CheckBox id="ry_tim_ri" x="508" y="62"/>
+			<s:CheckBox id="ry_ri_ti_ri" x="508" y="120"/>
+			<s:CheckBox id="ry_ri" x="508" y="183"/>
+			<s:CheckBox id="ry_tim" x="508" y="226"/>
+			<s:CheckBox id="ry_ri_tim" x="508" y="280"/>
+			<s:CheckBox id="ry_tri_o_la" x="508" y="336"/>
+			<s:CheckBox id="ry_tai" x="508" y="397"/>
+			<s:CheckBox id="ry_ti_ti_ti" x="754" y="15"/>
+			<s:CheckBox id="ry_ta_ti" x="754" y="58"/>
+			<s:CheckBox id="ry_ti_ta" x="754" y="116"/>
+			<s:CheckBox id="ry_tim_ri_ti" x="754" y="179"/>
+			<s:CheckBox id="ry_ri_tim_ti" x="754" y="222"/>
+			<s:CheckBox id="ry_ti_tim_ri" x="754" y="276"/>
+			<s:CheckBox id="ry_anacrusis" x="754" y="332"/>
+			<s:CheckBox id="ry_other" x="916" y="201"/>
+			<s:CheckBox id="ry_tie" x="754" y="393"/>
+			<s:Button id="btnSaveSongEdits0" x="343" y="448" width="272" height="67"
+					  label="Save Song Edits" click="btnSaveSongEdits_clickHandler(event)"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="btnPed" width="100%" height="100%" label="Pedagogy" creationComplete="btnPed_creationCompleteHandler(event)" click="btnPed_clickHandler(event)">
+			<s:DataGrid id="melodicContexts" x="166" y="64" width="722" height="107"
+						dataProvider="{this.getMelodicContextResult.lastResult}">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="toneAbbreviation" headerText="Melodic Element" width="140"></s:GridColumn>
+						<s:GridColumn dataField="melodicElementContext" headerText="OLD Element Context" width="140"></s:GridColumn>
+						<s:GridColumn dataField="contextName" headerText="New Context" width="140"></s:GridColumn>
+						<s:GridColumn dataField="mPreperation" headerText="  Preparation" width="100">
+						<s:itemRenderer>
+							<fx:Component>
+								<s:GridItemRenderer>
+									<s:CheckBox id="test123" selected="{(data.MPreparation)}" x="40"/>
+								</s:GridItemRenderer>
+							</fx:Component>
+						</s:itemRenderer>
+						</s:GridColumn>
+						<s:GridColumn dataField="mEarlyPractice" headerText="    Practice" width="85">
+							<s:itemRenderer>
+								<fx:Component>
+									<s:GridItemRenderer>
+										<s:CheckBox id="test124" selected="{(data.MearlyPractice)}" x="40"/>
+									</s:GridItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:GridColumn>
+						<s:GridColumn dataField="MMiddlePractice" headerText="   Tuning Up" width="85">
+							<s:itemRenderer>
+								<fx:Component>
+									<s:GridItemRenderer>
+										<s:CheckBox id="test125" selected="{data.MMiddlePractice}" x="40"/>
+									</s:GridItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:GridColumn>
+						<s:GridColumn dataField="mLatePractice" headerText="     Older" width="85">
+							<s:itemRenderer>
+								<fx:Component>
+									<s:GridItemRenderer>
+										<s:CheckBox id="test126" selected="{(data.MlatePractice)}" x="40"/>
+									</s:GridItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:GridColumn>
+					</s:ArrayList>
+				</s:columns>
+				<s:typicalItem>
+					<fx:Object dataField1="Sample Data" dataField2="Sample Data"
+							   dataField3="Sample Data"></fx:Object>
+				</s:typicalItem>
+			</s:DataGrid>
+			<s:DataGrid id="dgRythmicContexts" x="174" y="284" width="504" height="107"
+						dataProvider="{this.getRythmicContextResult.lastResult}">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="rythmName" headerText="Rhythm Name" width="140"></s:GridColumn>
+						<s:GridColumn dataField="RPreparation" headerText="  Preparation" width="100">
+							<s:itemRenderer>
+								<fx:Component>
+									<s:GridItemRenderer>
+										<s:CheckBox id="test123" selected="{(data.RPreparation)}" x="40"/>
+									</s:GridItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:GridColumn>
+						<s:GridColumn dataField="rEarly" headerText="    Early" width="85">
+							<s:itemRenderer>
+								<fx:Component>
+									<s:GridItemRenderer>
+										<s:CheckBox id="test124" selected="{(data.rEarly)}" x="40"/>
+									</s:GridItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:GridColumn>
+						<s:GridColumn dataField="rMiddle" headerText="   Tuning Up" width="85">
+							<s:itemRenderer>
+								<fx:Component>
+									<s:GridItemRenderer>
+										<s:CheckBox id="test125" selected="{data.rMiddle}" x="40"/>
+									</s:GridItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:GridColumn>
+						<s:GridColumn dataField="rLate" headerText="     Older" width="85">
+							<s:itemRenderer>
+								<fx:Component>
+									<s:GridItemRenderer>
+										<s:CheckBox id="test126" selected="{(data.rLate)}" x="40"/>
+									</s:GridItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:GridColumn>
+					</s:ArrayList>
+				</s:columns>
+				<s:typicalItem>
+					<fx:Object dataField1="Sample Data" dataField2="Sample Data"
+							   dataField3="Sample Data"></fx:Object>
+				</s:typicalItem>
+			</s:DataGrid>
+			<s:Label x="375" y="28" fontSize="15" text="Melodic Elements and Context"/>
+			<s:Label x="319" y="253" fontSize="15" text="Rhythmic Elements and Context"/>
+			<s:Label id="lblMotives" x="762" y="261" fontSize="15" text="Motives" visible="true"/>
+			<ns2:comboBox2 id="cboMelodicElements" x="157" y="211"
+						   change="cboMelodicElements_changeHandler(event)"
+						   dataProvider="{this.getMelodicElementsResult.lastResult}"/>
+			<s:Label id="lblMelodicElement" x="189" y="193" text="Melodic Element"/>
+			<s:Label id="lblRythmicElement" x="204" y="404" text="Rythmic Element"/>
+			<s:Label id="lblMelodicContext" x="334" y="194" text="Melodic Context&#xd;"/>
+			<ns2:comboBox2 id="cboMelodicContexts" x="334" y="211" dataProvider="{this.getMelContextsForElementResult.lastResult}" />
+			<ns2:comboBox2 id="cboRythmicElements" x="177" y="424" dataProvider="{this.getRythmicContextsResult.lastResult}" />
+			<s:Button id="btnAddMelodicToSong" x="775" y="178" width="106" height="63"
+					  label="Add To Song" click="btnAddMelodicToSong_clickHandler(event)"/>
+		
+			<s:Button id="btnAddRythmicToSong" x="577" y="409" width="111" height="63"
+					  label="Add To Song" click="btnAddRythmicToSong_clickHandler(event)"/>
+			<s:CheckBox id="chkPreparation" x="506" y="190" label="Preparation"/>
+			<s:CheckBox id="chkPractice" x="617" y="190" label="Practice"/>
+			<s:CheckBox id="chkTuning" x="506" y="216" label="Tuning"/>
+			<s:CheckBox id="chkOlder" x="617" y="216" label="Older"/>
+			<s:CheckBox id="chkPreparationRythm" x="386" y="403" label="Preparation"/>
+			<s:CheckBox id="chkPracticeRythm" x="497" y="403" label="Practice"/>
+			<s:CheckBox id="chkTuningRythm" x="386" y="429" label="Tuning"/>
+			<s:CheckBox id="chkOlderRythm" x="497" y="429" label="Older"/>
+			<s:Button id="btnDeleteMelContextRecord" x="42" y="93" label="Delete Selected"
+					  click="btnDeleteMelContextRecord_clickHandler(event)"/>
+			<s:Button id="btnAddNewMelContext" x="43" y="122" width="104" label="Add New"
+					  click="btnAddNewMelContext_clickHandler(event)"/>
+			<s:Button id="btnCancelMelContext" x="43" y="151" width="104" label="Cancel"
+					  click="btnCancelMelContext_clickHandler(event)"/>
+			<s:Button id="btnDeleteRythmContextRecord" x="41" y="306" label="Delete Selected"
+					  click="btnDeleteRythmicContext(event)"/>
+			<s:Button id="btnAddNewRythmContext" x="42" y="335" width="104" label="Add New"
+					  click="btnAddRythmicToSongPrepare_clickHandler(event)"/>
+	
+			<s:Button id="btnCancelRythmContext" x="42" y="364" width="104" label="Cancel"
+					  click="btnCancelRythmContext_clickHandler(event)"/>
+			<s:TextInput id="tiMelodicContext" x="334" y="210" width="160" visible="false"/>
+			<s:DataGrid id="dgMotives" x="698" y="284" width="183" height="107" requestedRowCount="6" visible="true" click="dgMotives_clickHandler(event)"
+						 focusOut="dgMotives_focusOutHandler(event)"
+						>
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="motive" headerText="motive"></s:GridColumn>
+					</s:ArrayList>
+				</s:columns>
+				<s:typicalItem>
+					<fx:Object motive="motive1" title_ID="title_ID1"></fx:Object>
+				</s:typicalItem>
+				<s:AsyncListView list="{getMotivesForSongResult.lastResult}"/>
+			</s:DataGrid>
+			<s:TextInput id="tiMotive" x="712" y="409" width="149"/>
+			<s:Button id="btnAddMotive" x="746" y="436" height="20" label="Add Motive"
+					  click="btnAddMotive_clickHandler(event)"/>
+			<s:Button id="btnDeleteMotive" visible="false" x="719" y="462"
+					  label="Delete Selected Motive" click="btnDeleteMotive_clickHandler(event)"/>
+					 
+			
+			
+			
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent width="100%" height="100%" label="Uses" id="uses" creationComplete="uses_creationCompleteHandler(event)">
+			<s:TextInput id="txtGradeLevel" x="141" y="16"/>
+			<s:Label x="31" y="21" text="Grades Summary:"/>
+			<s:Label x="74" y="62" text="Specific Grade Levels"/>
+			<s:BorderContainer x="28" y="88" width="258" height="200">
+				<s:ToggleButton id="tglPreK" x="44" y="10" label="Pre-K"/>
+				<s:ToggleButton id="tglK" x="137" y="10" label="K"/>
+				<s:ToggleButton id="tgl1" x="27" y="44" width="36" label="1"/>
+				<s:ToggleButton id="tgl5" x="28" y="77" width="36" label="5"/>
+				<s:ToggleButton id="tgl6" x="76" y="77" width="36" label="6"/>
+				<s:ToggleButton id="tgl7" x="124" y="77" width="36" label="7"/>
+				<s:ToggleButton id="tgl8" x="174" y="77" width="36" label="8"/>
+				<s:ToggleButton id="tgl2" x="75" y="44" width="36" label="2"/>
+				<s:ToggleButton id="tgl3" x="123" y="44" width="36" label="3"/>
+				<s:ToggleButton id="tgl4" x="173" y="44" width="36" label="4"/>
+				<s:ToggleButton id="tglHighSchool" x="75" y="120" label="High School"/>
+				<s:ToggleButton id="tglOlder" x="67" y="153" label="Older Beginner"/>
+			</s:BorderContainer>
+			<s:DataGrid id="dgSongTypes" x="165" y="322" width="116"
+						creationComplete="dgSongTypes_creationCompleteHandler(event)"
+						dataProvider="{this.getSongTypesForSongResult.lastResult}"
+						requestedRowCount="3"
+						selectionChange="dgSongTypes_selectionChangeHandler(event)">
+						 
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="songType" headerText="Song Type"></s:GridColumn>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+			<s:Button id="btnAddSongType" x="23" y="389" width="125" label="Add Type..."
+					  click="editSongTypes_clickHandler(event)"/>
+			<ns2:comboBox2 id="cboSongTypes" x="119" y="445" creationComplete="cboSongTypes_creationCompleteHandler(event)"
+			  dataProvider="{this.getSongTypesResult.lastResult}" />
+			<s:Button id="btnAddSongTypeForSong" x="6" y="445" label="Save Song Type"
+					  click="btnAddSongType_clickHandler(event)"/>
+			<s:Button id="btnDeleteSongTypeForSong" x="23" y="343" width="125" height="28"
+					  label="Delete Selected" click="deleteSongType_clickHandler(event)"/>
+			<s:DataGrid id="dataGrid" x="431" y="16" width="515"
+						creationComplete="dataGrid_creationCompleteHandler(event)"
+						requestedRowCount="4"
+						selectionChange="dataGrid_selectionChangeHandler(event)"
+						dataProvider="{getGamesForSongResult.lastResult}">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="gameType" headerText="Game Type"></s:GridColumn>
+						<s:GridColumn dataField="subGameType" headerText="Sub Game Type"></s:GridColumn>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+			<s:Button id="btnGameTypeView" x="325" y="109" width="98" label="Add a Game..."
+					  click="btnGameTypeView_clickHandler(event)"/>
+			<ns2:comboBox2 id="cboGameTypes" x="449" y="155"
+						   change="cboGameTypes_changeHandler(event)"
+						   creationComplete="loadGameTypes()"
+						   dataProvider="{this.getGameTypesResult.lastResult}"/>
+			<s:Label id="lblGameTypes" x="469" y="139" text="Main Game Type"/>
+			<s:Label id="lblFigures" x="481" y="304" text="Figures&#xd;"/>
+			<s:Label id="lblSubjects" x="694" y="303" text="Subjects&#xd;"/>
+			<s:Label id="lblSubSubjects" x="832" y="303" text="SubSubjects&#xd;"/>
+			<s:Label id="lblRelatedSubGameTypes" x="645" y="140" text="Related Sub Game Type"/>
+			<ns2:comboBox2 id="cboRelatedGameTypes" x="638" y="155" dataProvider="{this.getRelatedGamesResult.lastResult}"
+						    creationComplete="cboRelatedGameTypes_creationCompleteHandler(event)"/>
+			<s:Button id="btnSaveGameType" x="325" y="153" width="98" label="Save Game"
+					  click="btnSaveGameType_clickHandler(event)"/>
+			<s:Button id="btnDeleteGame" x="325" y="60" width="98" label="Delete Selected"
+					  click="btnDeleteGame_clickHandler(event)"/>
+			<ns2:comboBox2 id="cboFigures" x="433" y="320" width="135"
+						   creationComplete="handleFiguresCreationComplete()"
+						   dataProvider="{this.getFiguresResult.lastResult}"/>
+			<s:DataGrid id="dataGrid2" x="431" y="182" width="137"
+						creationComplete="dataGrid2_creationCompleteHandler(event)"
+						requestedRowCount="4"
+						selectionChange="dataGrid2_selectionChangeHandler(event)">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="Figure" headerText="Figures"></s:GridColumn>
+					</s:ArrayList>
+				</s:columns>	
+				<s:AsyncListView list="{getFiguresForSongResult.lastResult}"/>
+			</s:DataGrid>
+			<s:Button id="btnAddFigure" x="325" y="320" width="98" label="Save Figure..."
+					  click="btnAddFigure_clickHandler(event)"/>
+			<s:Button id="btnDeleteFigure" x="323" y="242" width="98" label="Delete Selected"
+					  click="btnDeleteFigure_clickHandler(event)"/>
+			<s:Button id="btnAddFigureDisplay" x="325" y="274" width="98" label="Add a Figure..."
+					  click="btnAddFigureDisplay_clickHandler(event)"/>
+			<s:Label id="lblPartWork1" x="493" y="478" text="Part Work"/>
+			<s:Label id="lblParWork2" x="704" y="478" text="Part Work Context"/>
+			<s:DataGrid id="dataGrid3" x="431" y="357" width="515"
+						creationComplete="dataGrid3_creationCompleteHandler(event)"
+						requestedRowCount="4"
+						selectionChange="dataGrid3_selectionChangeHandler(event)" dataProvider="{getPartWorkForSongResult.lastResult}">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="partWorkName" headerText="Part Work" width="150"></s:GridColumn>
+						<s:GridColumn dataField="Part_Work_Context_String"
+									  headerText="Part Work Context"></s:GridColumn>
+						
+						
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+			<ns2:comboBox2 id="cboPartWorkNames" x="449" y="493" creationComplete="handlePartWorkNames()" dataProvider="{this.getPartWorkNamesResult.lastResult}"/>
+			<s:TextInput id="tiPartWorkContext" x="638" y="493" width="308"/>
+			<s:Button id="btnAddPartWork" x="325" y="424" width="98" label="Add Part Work.."
+					  click="btnAddPartWork_clickHandler(event)"/>
+			<s:Button id="btnDeletePartWork" x="325" y="389" width="98" label="Delete Selected"
+					  click="btnDeletePartWork_clickHandler(event)"/>
+			<s:Button id="btnSavePart" x="325" y="493" width="98" label="Save Part"
+					  click="btnSavePart_clickHandler(event)"/>
+			<s:Label x="704" y="242" text="Subjects"/>
+			<s:DataGrid id="dataGrid4" x="679" y="182" width="267" height="116"
+						creationComplete="dataGrid4_creationCompleteHandler(event)"
+						dataProvider="{this.getSubjectsForSongResult.lastResult}"
+						selectionChange="dataGrid4_selectionChangeHandler(event)">
+				<s:columns>
+					<s:ArrayList>
+						
+						<s:GridColumn dataField="subjectHeading" headerText="Subject"></s:GridColumn>
+						
+						<s:GridColumn dataField="subSubjectHeading" headerText="SubSubject"></s:GridColumn>
+		
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+			<ns2:comboBox2 id="cboSubjects" x="679" y="320" width="101"
+						   change="cboSubjects_changeHandler(event)"
+						   dataProvider="{this.getSubjectHeadingsResult.lastResult}"/>
+			<ns2:comboBox2 id="cboSubSubjects" x="800" y="320" width="148"
+						   dataProvider="{this.getRelatedSubjectsResult.lastResult}"/>
+			<s:Button id="btnSaveSubject" x="572" y="319" width="99" label="Save Subject"
+					  click=" btnSaveSubject_clickHandler(event)"/>
+			<s:Button id="btnDeleteSubject" x="572" y="248" width="103" label="Delete Selected"
+					  click="btnDeleteSubject_clickHandler(event)"/>
+			<s:Button id="btnAddSubject" x="572" y="276" width="103" label="Add Subject"
+					  click="btnAddSubject_clickHandler(event)"/>
+			<s:Button id="btnSaveSongEdits2" x="10" y="493" width="272" height="54"
+					  label="Save Song Edits" click="btnSaveSongEdits_clickHandler(event)"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="tabFileNames" width="100%" height="100%"
+							label="Supporting File Names"
+							creationComplete="fileNames_CreationComplete()" fontSize="8">
+			<s:TextInput id="tiNotationFileName" x="195" y="10" width="312" />
+			<s:Label x="122" y="17" text="Notation File:"/>
+			<s:VideoPlayer x="195" y="88" height="27" autoPlay="false" scaleMode="none"
+						   source="{this.mp3Name}" id="audioPLayer"   />
+			<s:Label x="279" y="69" text="Sound File Playback"/>
+			<s:Button id="btnEnableAudio" x="403" y="66" width="55" height="14" label="Enable" click="enableAudioPlayer()"/>
+			<s:Button id="btnSaveSongEdits1" x="342" y="390" width="272" height="96"
+					  label="Save Song Edits" click="btnSaveSongEdits_clickHandler(event)"/>
+			<s:CheckBox id="chkHasRecording" x="521" y="89" label="Has Recording" fontSize="11" />
+			
+		</s:NavigatorContent>
+	</mx:TabNavigator>
+	<controls:SmartCombo id="cboTitleSelection" includeIn="State1" x="196" y="627" width="326"
+						 caseSensitiveSearching="false"
+						 change="cboTitleSelection_changeHandler(event)"
+						 dataProvider="{this.getTitlesForCBOResult.lastResult}"
+						 prompt="Click Arrow and Begin Typing Song Name..."/>
+	<s:TextInput id="tiTitle" includeIn="editContainer" x="345" y="10" width="386"/>
+	<s:Label includeIn="editContainer" x="285" y="14" fontFamily="Verdana" fontSize="16" text="TITLE:"/>
+	<s:Label includeIn="editContainer" x="236" y="42" height="19" fontFamily="Verdana" fontSize="16"
+			 text="ALT TITLE 1:"/>
+	<s:Label includeIn="editContainer" x="236" y="73" height="19" fontFamily="Verdana" fontSize="16"
+			 text="ALT TITLE 2:"/>
+	<s:TextInput id="tiAltTitle1" includeIn="editContainer" x="345" y="40" width="386"/>
+	<s:TextInput id="tiAltTitle2" includeIn="editContainer" x="345" y="70" width="386"/>
+	<s:Button id="btnCancel" includeIn="editContainer" x="14" y="10" width="140" height="67"
+			  label="Cancel and Return" click="btnCancelClick(event)"/>
+	<s:Label includeIn="State1" x="229" y="604" text="Double click song above or select a song below:"/>
+	<s:Button id="btnCreateNewSong" includeIn="State1" x="573" y="638" width="210"
+			  label="Create New Song" click="btnCreateNewSong_clickHandler(event)"/>
+	<s:CheckBox id="chkAnlayzed" includeIn="editContainer" x="767" y="14" label="Analyzed"/>
+	<s:CheckBox id="chkNotated" includeIn="editContainer" x="767" y="44" label="Notated"/>
+	<s:CheckBox id="chkProofed" includeIn="editContainer" x="767" y="74" label="Proofed"/>
+	<s:CheckBox id="chkIP" includeIn="editContainer" x="854" y="15" label="IP"/>
+	<s:CheckBox id="chkLoC" includeIn="editContainer" x="854" y="44" label="LoC"/>
+	<s:CheckBox id="chkChild" includeIn="editContainer" x="854" y="74" label="Child"/>
+	<s:Button id="btnDeleteSong" includeIn="State1" x="573" y="609" width="210" label="Delete Selected Song" click="confirmDelete()"/>
+	<s:Label includeIn="State1" x="460" y="55" width="62" text="Version 3.5"/>
+	<s:Button id="btnNews" includeIn="State1" x="24" y="75" label="News"
+			  click="btnNews_clickHandler(event)"/>
+	<s:DataGrid id="dgNewsItems" includeIn="news" x="93" y="50" width="851" height="146"
+				creationComplete="dataGrid5_creationCompleteHandler(event)" click="getNewsItem(this.dgNewsItems.selectedItem.id);this.btnSaveNewsEdit.visible=true;" >
+		<s:columns>
+			<s:ArrayList>
+				
+				
+				<s:GridColumn dataField="newsItemPostSwitch" headerText="Pub?" width="50"></s:GridColumn>
+				<s:GridColumn dataField="newsItemHeadline" headerText="newsItemHeadline" width="500"></s:GridColumn>
+				
+				<s:GridColumn dataField="postDate" headerText="postDate"></s:GridColumn>
+				
+			</s:ArrayList>
+		</s:columns>
+		<s:typicalItem>
+			<fx:Object id="id1" dateString="dateString1" newsItemCopy="newsItemCopy1"
+					   newsItemHeadline="newsItemHeadline1" newsItemPosition="newsItemPosition1"
+					   newsItemPostSwitch="newsItemPostSwitch1" newsTeaser="newsTeaser1"
+					   postDate="postDate1"></fx:Object>
+		</s:typicalItem>
+		<s:AsyncListView list="{getNewsResult.lastResult}"/>
+	</s:DataGrid>
+	<s:Label includeIn="news" x="437" y="10" fontSize="18" text="NEWS EDITOR"/>
+	<s:TextInput id="tiNewsHeadline" includeIn="news" x="93" y="233" width="502" />
+	<s:Label includeIn="news" x="93" y="214" fontSize="14" text="Headline"/>
+	<s:Label includeIn="news" x="616" y="213" fontSize="14" text="Post Date (e.g. 3/10/2014)"/>
+	<s:Label includeIn="news" x="822" y="213" fontSize="14" text="Date String"/>
+	<s:Label includeIn="news" x="96" y="361" fontSize="14" text="Text"/>
+	<s:Label includeIn="news" x="93" y="268" fontSize="14" text="Teaser&#xd;"/>
+	<s:Button id="btnSaveNewsEdit" includeIn="news" x="115" y="556" label="Save Edit"
+			  click="btnSaveNewsEdit_clickHandler(event)" visible="false"/>
+	<s:TextArea id="tiNews" includeIn="news" x="97" y="384" width="847"/>
+	<s:CheckBox id="chkPostNews" includeIn="news" x="632" y="288" label="Post?"/>
+	<s:TextArea id="tiTeaser" includeIn="news" x="95" y="288" width="498" height="54"/>
+	<s:TextInput id="tiPostDate" includeIn="news" x="632" y="233"/>
+	<s:TextInput id="tiDateString" includeIn="news" x="784" y="232" width="160"/>
+	<s:Button id="btnReturnFromNews" includeIn="news" x="434" y="625" width="134" label="Return"
+			  click="btnReturnFromNews_clickHandler(event)"/>
+	<s:Button id="btnCreateNewsItem" includeIn="news" x="434" y="543" label="Create New News Item"
+			  click="btnCreateNewsItem_clickHandler(event)"/>
+	<s:Button id="btnSaveNewNewsItem" includeIn="news" x="434" y="583" width="134"
+			  label="Save New News Item" click="btnSaveNewNewsItem_clickHandler(event)" visible="false"/>
+	<s:CheckBox id="chkGame" includeIn="editContainer" x="767" y="99" label="Game"/>
+</s:WindowedApplication>

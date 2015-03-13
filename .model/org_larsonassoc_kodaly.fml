@@ -1,0 +1,1476 @@
+
+<model xmlns="http://ns.adobe.com/Fiber/1.0">
+  <annotation name="ActionScriptGeneration">
+    <item name="FullyQualifyReferences">true</item>
+  </annotation>
+  <entity name="Regions">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Regions</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <annotation name="getRegions">
+      <item name="propertySpecifier">label,DATA</item>
+    </annotation>
+    <property name="label" type="string" required="true"/>
+    <property name="DATA" type="integer" required="true"/>
+  </entity>
+  <entity name="Ethnicities">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Ethnicities</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getEthnicity">
+      <item name="propertySpecifier">label,DATA</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="label" type="string" required="true"/>
+    <property name="DATA" type="integer" required="true"/>
+  </entity>
+  <entity name="CustomDatatype">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">CustomDatatype</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getMelodicContextsForSong">
+      <item name="propertySpecifier">id,MlatePractice,melodicElementKey,MPreparation,melodicElementContext,MearlyPractice,titleKey,MMiddlePractice,toneAbbreviation,MelodicContextKey</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer" required="true"/>
+    <property name="MlatePractice" type="boolean" required="true"/>
+    <property name="melodicElementKey" type="integer" required="true"/>
+    <property name="MPreparation" type="boolean" required="true"/>
+    <property name="melodicElementContext" type="string" required="true"/>
+    <property name="MearlyPractice" type="boolean" required="true"/>
+    <property name="titleKey" type="integer" required="true"/>
+    <property name="MMiddlePractice" type="boolean" required="true"/>
+    <property name="toneAbbreviation" type="string" required="true"/>
+    <property name="MelodicContextKey" type="integer" required="true"/>
+  </entity>
+  <service name="Kodaly">
+    <annotation name="ActionScriptGeneration">
+      <item name="Source">KodalyNew.data.kodaly</item>
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services.kodaly</item>
+      <item name="Endpoint">http://localhost:8500/flex2gateway/</item>
+      <item name="Destination">ColdFusion</item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">ColdFusion</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="COLDFUSION_SERVER_ROOT_URL">http://localhost:8500/</item>
+      <item name="LINKED_FILE">kodaly.cfc</item>
+      <item name="COLDFUSION_SERVER_CONTEXT_ROOT"></item>
+      <item name="CFC_CLASS_NAME">kodaly</item>
+      <item name="CFC_RELATIVE_LOCATION">KodalyNew/data/kodaly.cfc</item>
+      <item name="ABSOLUTE_ENDPOINT">http://localhost:8500/flex2gateway/</item>
+      <item name="CFC_LOCATION">/Applications/ColdFusion9/wwwroot/KodalyNew/data/kodaly.cfc</item>
+    </annotation>
+    <function name="getTitles" return-type="SongBasics[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">ID,First_Line_Text,Analyzed,Title</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getSongDetails" return-type="SongDetails[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">tai,tie,Alt_Title_2,Alt_Title_1,nine,ta_a_a,ta_a,Child,Origin,zero,tiri_ti,whole_rest,ti_ta_ti,ti_tiri,Informant,tim_ri,formTypeID,Publication,twelve,tonalCenterID,tri_o_la,eleven,formAnalysisStr,Scorch_File_Name,six,Starting_PitchID,rythmicMotiff,toneSetID,ri_tim_ti,inFinale,eighth_rest,k,Title,numberMeasuresStr,Tim,ti_ti_ti,ten,Game_Graphics,ti_ti,Recording_Flag,Grade_String,IP_Notes,First_Line_Text,tim_ri_ti,Game_Instructions,ti_ta,ti,eight,tai_ti,rangeID,ta,ti_tai,three,ID,stateID,Proofed_Flag,meterID,ethnicityID,Comments,CSP,Game,Other,onForm,NOTE,ta_a_a_a,tiri,keySigID,ri_tim_ri,Source,scaleID,formID,Retrieval,ch,rest,regionID,one,tiri_tiri,tika_tika_tika,ta_ti,half_rest,ti_tim_ri,Analyzed,ri_tim,Audio_File_Name,four,five,IP_Status,other_other,Ri,Notation_File_Name,figuresID,two,Song_Background,seven,LoC,Grace,Anac</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="ID" type="float"/>
+    </function>
+    <function name="getTitlesForCBO" return-type="TitlesCBOData[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getStates" return-type="States[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getRegions" return-type="Regions2[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getEthnicity" return-type="Ethnicities2[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getNotes" return-type="Notes[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getScales" return-type="Scales[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getRange" return-type="Range[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getMeters" return-type="Meters[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getForms" return-type="Forms[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getFormType" return-type="FormType[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getStartingPitch" return-type="StartingPitch[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getMelodicContextsForSong" return-type="MelodicContext[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,toneName,MlatePractice,melodicElementKey,MPreparation,melodicElementContext,MearlyPractice,titleKey,contextName,MMiddlePractice,toneAbbreviation,MelodicContextKey</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="titleKey" type="float"/>
+    </function>
+    <function name="getRythmicContextsForSong" return-type="RhythmicContext[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,rEarly,rythmName,rLate,rhythmKey,RPreparation,rMiddle,titleKey</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="titleKey" type="float"/>
+    </function>
+    <function name="getMelodicElements" return-type="MelodicElements[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getMelodicContexts" return-type="MelodicContexts[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getRythmicContexts" return-type="RythmicContexts[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="insertMelodicContext" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="MelodicContext" type="MelodicContext"/>
+    </function>
+    <function name="deleteMelodicContextForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="id" type="float"/>
+    </function>
+    <function name="insertRythmicContext" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="rythmicContext" type="RhythmicContext"/>
+    </function>
+    <function name="deleteRythmicContextForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="id" type="float"/>
+    </function>
+    <function name="getSongTypesForSong" return-type="SongTypesForSong[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,songTypeKey,songType,titleKey</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="titleKey" type="float"/>
+    </function>
+    <function name="getSongTypes" return-type="SongTypes[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="insertSongTypeForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="songTypeRecord" type="SongTypesForSong"/>
+    </function>
+    <function name="deleteSongTypeForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="id" type="float"/>
+    </function>
+    <function name="getGamesForSong" return-type="GameTypesForSong[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,subGameTypeKey,gameType,subGameType,gameTypeKey,titleKey,Subgame_Flag</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="titleKey" type="float"/>
+    </function>
+    <function name="getGameTypes" return-type="GameType[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getRelatedGameTypes" return-type="RelatedSubGames[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="gameTypeKey" type="float"/>
+    </function>
+    <function name="insertGameTypeForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="gameTypeForSong" type="GameTypesForSong"/>
+    </function>
+    <function name="deleteGameTypeForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="id" type="float"/>
+    </function>
+    <function name="getFigures" return-type="Figures[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getFiguresForSong" return-type="FiguresForSong[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">Title_Key,Figure_Title_ID,Figure</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="id" type="float"/>
+    </function>
+    <function name="addFigureToSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="figuresForSong" type="FiguresForSong"/>
+    </function>
+    <function name="deleteFigureFromSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="Figure_Title_ID" type="float"/>
+    </function>
+    <function name="getPartWorkForSong" return-type="PartWorkForSong[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">partWorkKey,titlePartKey,Part_Work_Context_String,titleKey,partWorkName</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="titleKey" type="float"/>
+    </function>
+    <function name="getPartWorkNames" return-type="PartWorkNames[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">sequence,data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="insertPartWorkForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="partWorkForSong" type="PartWorkForSong"/>
+    </function>
+    <function name="deletePartWorkForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="tableID" type="float"/>
+    </function>
+    <function name="getSubjectsForSong" return-type="SubjectsForSong[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">subSubjectKey,subjectHeading,ID_Title_Subject,subSubjectHeading,titleKey,subjectKey</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParamNames">titleKey</item>
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="titleKey" type="float"/>
+    </function>
+    <function name="getSubjectHeading" return-type="SubjectHeadings[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getRelatedSubjects" return-type="RelatedSubjects[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,subjectHeadingKey,data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="mainSubject" type="float"/>
+    </function>
+    <function name="insertNewSubject" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="subjectForSong" type="SubjectsForSong"/>
+    </function>
+    <function name="deleteSubjectFromSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="ID_Title_Subject" type="float"/>
+    </function>
+    <function name="insertNewSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="SongDetails" type="SongDetails"/>
+    </function>
+    <function name="updateSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="SongDetails" type="SongDetails"/>
+    </function>
+    <function name="deleteSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="ID" type="float"/>
+    </function>
+    <function name="getMotivesForSong" return-type="Motives[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">motive,title_ID</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="title_ID" type="float"/>
+    </function>
+    <function name="insertMotiveToSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="motive" type="Motives"/>
+    </function>
+    <function name="deleteMotiveForSong" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="motive" type="Motives"/>
+    </function>
+    <function name="getMelContextsForElement" return-type="ContextsForElement[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">data,label</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="element" type="float"/>
+    </function>
+    <function name="getNews" return-type="News[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,newsTeaser,newsItemPosition,newsItemPostSwitch,newsItemHeadline,newsItemCopy,postDate,dateString</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getNewsItem" return-type="News[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">id,newsTeaser,newsItemPosition,newsItemPostSwitch,newsItemHeadline,newsItemCopy,postDate,dateString</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">float</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="ID" type="float"/>
+    </function>
+    <function name="updateNewsItem" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="newsItem" type="News"/>
+    </function>
+    <function name="createNewsItem" return-type="integer">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="newsItem" type="News"/>
+    </function>
+  </service>
+  <entity name="Meters">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Meters</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getMeters">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="GameTypesForSong">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">GameTypesForSong</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getGamesForSong">
+      <item name="propertySpecifier">id,subGameTypeKey,gameType,subGameType,gameTypeKey,titleKey,Subgame_Flag</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer" required="true"/>
+    <property name="subGameTypeKey" type="integer" required="true"/>
+    <property name="gameType" type="string" required="true"/>
+    <property name="subGameType" type="string" required="true"/>
+    <property name="gameTypeKey" type="integer" required="true"/>
+    <property name="titleKey" type="integer" required="true"/>
+    <property name="Subgame_Flag" type="boolean" required="true"/>
+  </entity>
+  <entity name="PartWorkForSong">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">PartWorkForSong</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getPartWorkForSong">
+      <item name="propertySpecifier">partWorkKey,titlePartKey,Part_Work_Context_String,titleKey,partWorkName</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="partWorkKey" type="integer" required="true"/>
+    <property name="titlePartKey" type="integer" required="true"/>
+    <property name="Part_Work_Context_String" type="string" required="true"/>
+    <property name="titleKey" type="integer" required="true"/>
+    <property name="partWorkName" type="string" required="true"/>
+  </entity>
+  <entity name="StartingPitch">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">StartingPitch</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getStartingPitch">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="News">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">News</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getNews">
+      <item name="propertySpecifier">id,newsTeaser,newsItemPosition,newsItemPostSwitch,newsItemHeadline,newsItemCopy,postDate,dateString</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <annotation name="getNewsItem">
+      <item name="propertySpecifier">id,newsTeaser,newsItemPosition,newsItemPostSwitch,newsItemHeadline,newsItemCopy,postDate,dateString</item>
+    </annotation>
+    <property name="id" type="integer" required="true"/>
+    <property name="newsTeaser" type="string" required="true"/>
+    <property name="newsItemPosition" type="integer" required="true"/>
+    <property name="newsItemPostSwitch" type="boolean" required="true"/>
+    <property name="newsItemHeadline" type="string" required="true"/>
+    <property name="newsItemCopy" type="string" required="true"/>
+    <property name="postDate" type="date" required="true"/>
+    <property name="dateString" type="string" required="true"/>
+  </entity>
+  <entity name="SongTypes">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">SongTypes</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getSongTypes">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="MelodicElements">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">MelodicElements</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getMelodicElements">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="MelodicContext">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">MelodicContext</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getMelodicContextsForSong">
+      <item name="propertySpecifier">id,toneName,MlatePractice,melodicElementKey,MPreparation,melodicElementContext,MearlyPractice,titleKey,contextName,MMiddlePractice,toneAbbreviation,MelodicContextKey</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="melodicContext" type="string" required="true"/>
+    <property name="id" type="integer" required="true"/>
+    <property name="toneName" type="string" required="true"/>
+    <property name="MlatePractice" type="boolean" required="true"/>
+    <property name="melodicElementKey" type="integer" required="true"/>
+    <property name="MPreparation" type="boolean" required="true"/>
+    <property name="melodicElementContext" type="string" required="true"/>
+    <property name="MearlyPractice" type="boolean" required="true"/>
+    <property name="titleKey" type="integer" required="true"/>
+    <property name="contextName" type="string" required="true"/>
+    <property name="MMiddlePractice" type="boolean" required="true"/>
+    <property name="toneAbbreviation" type="string" required="true"/>
+    <property name="MelodicContextKey" type="integer" required="true"/>
+  </entity>
+  <entity name="SongBasics">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">SongBasics</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getTitles">
+      <item name="propertySpecifier">ID,First_Line_Text,Analyzed,Title</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="ID" type="integer" required="true"/>
+    <property name="First_Line_Text" type="string" required="true"/>
+    <property name="Analyzed" type="boolean" required="true"/>
+    <property name="Title" type="string" required="true"/>
+  </entity>
+  <entity name="SongDetails">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">SongDetails</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getSongDetails">
+      <item name="propertySpecifier">tai,tie,Alt_Title_2,Alt_Title_1,nine,ta_a_a,ta_a,Child,Origin,zero,tiri_ti,whole_rest,ti_ta_ti,ti_tiri,Informant,tim_ri,formTypeID,Publication,twelve,tonalCenterID,tri_o_la,eleven,formAnalysisStr,Scorch_File_Name,six,Starting_PitchID,rythmicMotiff,toneSetID,ri_tim_ti,inFinale,eighth_rest,k,Title,numberMeasuresStr,Tim,ti_ti_ti,ten,Game_Graphics,ti_ti,Recording_Flag,Grade_String,IP_Notes,First_Line_Text,tim_ri_ti,Game_Instructions,ti_ta,ti,eight,tai_ti,rangeID,ta,ti_tai,three,ID,stateID,Proofed_Flag,meterID,ethnicityID,Comments,CSP,Game,Other,onForm,NOTE,ta_a_a_a,tiri,keySigID,ri_tim_ri,Source,scaleID,formID,Retrieval,ch,rest,regionID,one,tiri_tiri,tika_tika_tika,ta_ti,half_rest,ti_tim_ri,Analyzed,ri_tim,Audio_File_Name,four,five,IP_Status,other_other,Ri,Notation_File_Name,figuresID,two,Song_Background,seven,LoC,Grace,Anac</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="tai" type="boolean" required="true"/>
+    <property name="tie" type="boolean" required="true"/>
+    <property name="Alt_Title_2" type="string" required="true"/>
+    <property name="Alt_Title_1" type="string" required="true"/>
+    <property name="nine" type="boolean" required="true"/>
+    <property name="ta_a_a" type="boolean" required="true"/>
+    <property name="ta_a" type="boolean" required="true"/>
+    <property name="Child" type="boolean" required="true"/>
+    <property name="Origin" type="string" required="true"/>
+    <property name="zero" type="boolean" required="true"/>
+    <property name="tiri_ti" type="boolean" required="true"/>
+    <property name="whole_rest" type="boolean" required="true"/>
+    <property name="ti_ta_ti" type="boolean" required="true"/>
+    <property name="ti_tiri" type="boolean" required="true"/>
+    <property name="Informant" type="string" required="true"/>
+    <property name="tim_ri" type="boolean" required="true"/>
+    <property name="formTypeID" type="integer" required="true"/>
+    <property name="Publication" type="string" required="true"/>
+    <property name="twelve" type="boolean" required="true"/>
+    <property name="tonalCenterID" type="integer" required="true"/>
+    <property name="tri_o_la" type="boolean" required="true"/>
+    <property name="eleven" type="boolean" required="true"/>
+    <property name="formAnalysisStr" type="string" required="true"/>
+    <property name="Scorch_File_Name" type="string" required="true"/>
+    <property name="six" type="boolean" required="true"/>
+    <property name="Starting_PitchID" type="integer" required="true"/>
+    <property name="rythmicMotiff" type="string" required="true"/>
+    <property name="toneSetID" type="string" required="true"/>
+    <property name="ri_tim_ti" type="boolean" required="true"/>
+    <property name="inFinale" type="boolean" required="true"/>
+    <property name="eighth_rest" type="boolean" required="true"/>
+    <property name="k" type="boolean" required="true"/>
+    <property name="Title" type="string" required="true"/>
+    <property name="numberMeasuresStr" type="string" required="true"/>
+    <property name="Tim" type="boolean" required="true"/>
+    <property name="ti_ti_ti" type="boolean" required="true"/>
+    <property name="ten" type="boolean" required="true"/>
+    <property name="Game_Graphics" type="string" required="true"/>
+    <property name="ti_ti" type="boolean" required="true"/>
+    <property name="Recording_Flag" type="boolean" required="true"/>
+    <property name="Grade_String" type="string" required="true"/>
+    <property name="IP_Notes" type="string" required="true"/>
+    <property name="First_Line_Text" type="string" required="true"/>
+    <property name="tim_ri_ti" type="boolean" required="true"/>
+    <property name="Game_Instructions" type="string" required="true"/>
+    <property name="ti_ta" type="boolean" required="true"/>
+    <property name="ti" type="boolean" required="true"/>
+    <property name="eight" type="boolean" required="true"/>
+    <property name="tai_ti" type="boolean" required="true"/>
+    <property name="rangeID" type="integer" required="true"/>
+    <property name="ta" type="boolean" required="true"/>
+    <property name="ti_tai" type="boolean" required="true"/>
+    <property name="three" type="boolean" required="true"/>
+    <property name="ID" type="integer" required="true"/>
+    <property name="stateID" type="integer" required="true"/>
+    <property name="Proofed_Flag" type="boolean" required="true"/>
+    <property name="meterID" type="integer" required="true"/>
+    <property name="ethnicityID" type="integer" required="true"/>
+    <property name="Comments" type="string" required="true"/>
+    <property name="CSP" type="string" required="true"/>
+    <property name="Game" type="boolean" required="true"/>
+    <property name="Other" type="string" required="true"/>
+    <property name="onForm" type="boolean" required="true"/>
+    <property name="NOTE" type="integer" required="true"/>
+    <property name="ta_a_a_a" type="boolean" required="true"/>
+    <property name="tiri" type="boolean" required="true"/>
+    <property name="keySigID" type="integer" required="true"/>
+    <property name="ri_tim_ri" type="boolean" required="true"/>
+    <property name="Source" type="string" required="true"/>
+    <property name="scaleID" type="integer" required="true"/>
+    <property name="formID" type="integer" required="true"/>
+    <property name="Retrieval" type="boolean" required="true"/>
+    <property name="ch" type="boolean" required="true"/>
+    <property name="rest" type="boolean" required="true"/>
+    <property name="regionID" type="integer" required="true"/>
+    <property name="one" type="boolean" required="true"/>
+    <property name="tiri_tiri" type="boolean" required="true"/>
+    <property name="tika_tika_tika" type="boolean" required="true"/>
+    <property name="ta_ti" type="boolean" required="true"/>
+    <property name="half_rest" type="boolean" required="true"/>
+    <property name="ti_tim_ri" type="boolean" required="true"/>
+    <property name="Analyzed" type="boolean" required="true"/>
+    <property name="ri_tim" type="boolean" required="true"/>
+    <property name="Audio_File_Name" type="opaque" required="true"/>
+    <property name="four" type="boolean" required="true"/>
+    <property name="five" type="boolean" required="true"/>
+    <property name="IP_Status" type="boolean" required="true"/>
+    <property name="other_other" type="boolean" required="true"/>
+    <property name="Ri" type="boolean" required="true"/>
+    <property name="Notation_File_Name" type="string" required="true"/>
+    <property name="figuresID" type="integer" required="true"/>
+    <property name="two" type="boolean" required="true"/>
+    <property name="Song_Background" type="string" required="true"/>
+    <property name="seven" type="boolean" required="true"/>
+    <property name="LoC" type="boolean" required="true"/>
+    <property name="Grace" type="boolean" required="true"/>
+    <property name="Anac" type="boolean" required="true"/>
+  </entity>
+  <entity name="Forms">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Forms</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getForms">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="FiguresForSong">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">FiguresForSong</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getFiguresForSong">
+      <item name="propertySpecifier">Title_Key,Figure_Title_ID,Figure</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="Title_Key" type="integer" required="true"/>
+    <property name="Figure_Title_ID" type="integer" required="true"/>
+    <property name="Figure" type="string" required="true"/>
+  </entity>
+  <entity name="Ethnicities2">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Ethnicities2</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getEthnicity">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="RythmicContexts">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">RythmicContexts</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getRythmicContexts">
+      <item name="propertySpecifier">id,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="Figures">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Figures</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getFigures">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="Range">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Range</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getRange">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="RelatedSubGames">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">RelatedSubGames</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getRelatedGameTypes">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="RelatedSubjects">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">RelatedSubjects</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getRelatedSubjects">
+      <item name="propertySpecifier">id,subjectHeadingKey,data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="Sub_Subject_Key" type="integer" required="true"/>
+    <property name="subSubject" type="string" required="true"/>
+    <property name="id" type="integer" required="true"/>
+    <property name="subjectHeadingKey" type="integer" required="true"/>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="ContextsForElement">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">ContextsForElement</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getMelContextsForElement">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="elementSortIndex" type="integer" required="true"/>
+    <property name="contextName" type="string" required="true"/>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="Regions2">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Regions2</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getRegions">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="TitlesCBOData">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">TitlesCBOData</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getTitlesForCBO">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="MelodicContexts">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">MelodicContexts</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getMelodicContexts">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="GameType">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">GameType</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getGameTypes">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="States">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">States</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getStates">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="FormType">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">FormType</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getFormType">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="Notes">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Notes</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getNotes">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="SubjectsForSong">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">SubjectsForSong</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getSubjectsForSong">
+      <item name="propertySpecifier">subSubjectKey,subjectHeading,ID_Title_Subject,subSubjectHeading,titleKey,subjectKey</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="subSubjectKey" type="integer" required="true"/>
+    <property name="subjectHeading" type="string" required="true"/>
+    <property name="ID_Title_Subject" type="integer" required="true"/>
+    <property name="subSubjectHeading" type="string" required="true"/>
+    <property name="titleKey" type="integer" required="true"/>
+    <property name="subjectKey" type="integer" required="true"/>
+  </entity>
+  <entity name="Scales">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Scales</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <annotation name="getScales">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="SongTypesForSong">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">SongTypesForSong</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getSongTypesForSong">
+      <item name="propertySpecifier">id,songTypeKey,songType,titleKey</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer" required="true"/>
+    <property name="songTypeKey" type="integer" required="true"/>
+    <property name="songType" type="string" required="true"/>
+    <property name="titleKey" type="integer" required="true"/>
+  </entity>
+  <entity name="SubjectHeadings">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">SubjectHeadings</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getSubjectHeading">
+      <item name="propertySpecifier">data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+  <entity name="Motives">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Motives</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getMotivesForSong">
+      <item name="propertySpecifier">motive,title_ID</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="motive" type="string" required="true"/>
+    <property name="title_ID" type="integer" required="true"/>
+  </entity>
+  <entity name="RhythmicContext">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">RhythmicContext</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly,KodalyDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getRythmicContextsForSong">
+      <item name="propertySpecifier">id,rEarly,rythmName,rLate,rhythmKey,RPreparation,rMiddle,titleKey</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer" required="true"/>
+    <property name="rEarly" type="boolean" required="true"/>
+    <property name="rythmName" type="string" required="true"/>
+    <property name="rLate" type="boolean" required="true"/>
+    <property name="rhythmKey" type="integer" required="true"/>
+    <property name="RPreparation" type="boolean" required="true"/>
+    <property name="rMiddle" type="boolean" required="true"/>
+    <property name="titleKey" type="integer" required="true"/>
+  </entity>
+  <entity name="PartWorkNames">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">PartWorkNames</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">Kodaly</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getPartWorkNames">
+      <item name="propertySpecifier">sequence,data,label</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="sequence" type="integer" required="true"/>
+    <property name="data" type="integer" required="true"/>
+    <property name="label" type="string" required="true"/>
+  </entity>
+</model>
